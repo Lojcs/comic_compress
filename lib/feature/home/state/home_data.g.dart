@@ -449,7 +449,7 @@ abstract class _$MiscSettingsCWProxy {
 
   MiscSettings flatten(bool flatten);
 
-  MiscSettings includeHidden(bool includeHidden);
+  MiscSettings filterSettings(FilterSettings filterSettings);
 
   MiscSettings threadCount(int threadCount);
 
@@ -468,7 +468,7 @@ abstract class _$MiscSettingsCWProxy {
   MiscSettings call({
     bool normalizeImageNames,
     bool flatten,
-    bool includeHidden,
+    FilterSettings filterSettings,
     int threadCount,
     bool copyNonComicFiles,
     int zipEffort,
@@ -490,8 +490,8 @@ class _$MiscSettingsCWProxyImpl implements _$MiscSettingsCWProxy {
   MiscSettings flatten(bool flatten) => call(flatten: flatten);
 
   @override
-  MiscSettings includeHidden(bool includeHidden) =>
-      call(includeHidden: includeHidden);
+  MiscSettings filterSettings(FilterSettings filterSettings) =>
+      call(filterSettings: filterSettings);
 
   @override
   MiscSettings threadCount(int threadCount) => call(threadCount: threadCount);
@@ -515,7 +515,7 @@ class _$MiscSettingsCWProxyImpl implements _$MiscSettingsCWProxy {
   MiscSettings call({
     Object? normalizeImageNames = const $CopyWithPlaceholder(),
     Object? flatten = const $CopyWithPlaceholder(),
-    Object? includeHidden = const $CopyWithPlaceholder(),
+    Object? filterSettings = const $CopyWithPlaceholder(),
     Object? threadCount = const $CopyWithPlaceholder(),
     Object? copyNonComicFiles = const $CopyWithPlaceholder(),
     Object? zipEffort = const $CopyWithPlaceholder(),
@@ -531,11 +531,12 @@ class _$MiscSettingsCWProxyImpl implements _$MiscSettingsCWProxy {
           ? _value.flatten
           // ignore: cast_nullable_to_non_nullable
           : flatten as bool,
-      includeHidden:
-          includeHidden == const $CopyWithPlaceholder() || includeHidden == null
-          ? _value.includeHidden
+      filterSettings:
+          filterSettings == const $CopyWithPlaceholder() ||
+              filterSettings == null
+          ? _value.filterSettings
           // ignore: cast_nullable_to_non_nullable
-          : includeHidden as bool,
+          : filterSettings as FilterSettings,
       threadCount:
           threadCount == const $CopyWithPlaceholder() || threadCount == null
           ? _value.threadCount
@@ -560,6 +561,76 @@ extension $MiscSettingsCopyWith on MiscSettings {
   /// Example: `instanceOfMiscSettings.copyWith(...)` or `instanceOfMiscSettings.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$MiscSettingsCWProxy get copyWith => _$MiscSettingsCWProxyImpl(this);
+}
+
+abstract class _$FilterSettingsCWProxy {
+  FilterSettings excludedNames(List<RegExp> excludedNames);
+
+  FilterSettings untouchedNames(List<RegExp> untouchedNames);
+
+  /// Creates a new instance with the provided field values.
+  /// Omitted fields keep their values; explicit `null` clears nullable fields.
+  /// The public API rejects `null` for non-nullable fields. To update a single field use `FilterSettings(...).copyWith.fieldName(value)`.
+  ///
+  /// Example:
+  /// ```dart
+  /// FilterSettings(...).copyWith(id: 12, name: "My name")
+  /// ```
+  FilterSettings call({
+    List<RegExp> excludedNames,
+    List<RegExp> untouchedNames,
+  });
+}
+
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfFilterSettings.copyWith(...)` or call `instanceOfFilterSettings.copyWith.fieldName(value)` for a single field.
+class _$FilterSettingsCWProxyImpl implements _$FilterSettingsCWProxy {
+  const _$FilterSettingsCWProxyImpl(this._value);
+
+  final FilterSettings _value;
+
+  @override
+  FilterSettings excludedNames(List<RegExp> excludedNames) =>
+      call(excludedNames: excludedNames);
+
+  @override
+  FilterSettings untouchedNames(List<RegExp> untouchedNames) =>
+      call(untouchedNames: untouchedNames);
+
+  /// Creates a new instance with the provided field values.
+  /// Omitted fields keep their values; explicit `null` clears nullable fields.
+  /// The public API rejects `null` for non-nullable fields. To update a single field use `FilterSettings(...).copyWith.fieldName(value)`.
+  ///
+  /// Example:
+  /// ```dart
+  /// FilterSettings(...).copyWith(id: 12, name: "My name")
+  /// ```
+  @override
+  FilterSettings call({
+    Object? excludedNames = const $CopyWithPlaceholder(),
+    Object? untouchedNames = const $CopyWithPlaceholder(),
+  }) {
+    return FilterSettings(
+      excludedNames:
+          excludedNames == const $CopyWithPlaceholder() || excludedNames == null
+          ? _value.excludedNames
+          // ignore: cast_nullable_to_non_nullable
+          : excludedNames as List<RegExp>,
+      untouchedNames:
+          untouchedNames == const $CopyWithPlaceholder() ||
+              untouchedNames == null
+          ? _value.untouchedNames
+          // ignore: cast_nullable_to_non_nullable
+          : untouchedNames as List<RegExp>,
+    );
+  }
+}
+
+extension $FilterSettingsCopyWith on FilterSettings {
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfFilterSettings.copyWith(...)` or `instanceOfFilterSettings.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$FilterSettingsCWProxy get copyWith => _$FilterSettingsCWProxyImpl(this);
 }
 
 abstract class _$ProgressCWProxy {

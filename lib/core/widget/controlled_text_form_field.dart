@@ -10,6 +10,7 @@ class ControlledTextFormField extends StatefulWidget {
   final int maxLines;
   final String? title;
   final bool dense;
+  final TextAlign? alignment;
   const ControlledTextFormField({
     super.key,
     required this.valueChanged,
@@ -18,6 +19,7 @@ class ControlledTextFormField extends StatefulWidget {
     this.maxLines = 1,
     this.title,
     this.dense = true,
+    this.alignment,
   });
 
   @override
@@ -37,16 +39,18 @@ class _ControlledTextFormFieldState extends State<ControlledTextFormField> {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = context.textTheme.bodyMedium!;
+    final textTheme = context.textTheme;
     final field = TextFormField(
-      textAlign: .center,
+      textAlign: widget.alignment ?? .center,
       controller: controller,
       maxLines: widget.maxLines,
       onChanged: widget.valueChanged,
-      style: TextTheme.of(context).bodyMedium,
+      style: textTheme.bodyMedium,
       decoration: InputDecoration(
         hintText: widget.hintText,
-        hintStyle: textStyle.copyWith(color: textStyle.color!.withAlpha(128)),
+        hintStyle: textTheme.bodyMedium?.copyWith(
+          color: textTheme.bodyMedium!.color!.withAlpha(128),
+        ),
         contentPadding: widget.dense
             ? .symmetric(horizontal: 4, vertical: 6)
             : .symmetric(horizontal: 6, vertical: 10),

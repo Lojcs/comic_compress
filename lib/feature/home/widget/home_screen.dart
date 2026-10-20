@@ -23,7 +23,7 @@ import 'progress_queue.dart';
 class HomeScreen extends ProvidingWidget<HomeCubit, HomeData> {
   static const double minWidth = 516;
   static const double maxWidth = 1032;
-  static const double minHeight = 632;
+  static const double minHeight = 672;
   static const double folderHeight = 160;
   static const double runningHeight = 160;
   static Size size(ImageSettings settings, bool folderOpen) => Size(
@@ -41,133 +41,131 @@ class HomeScreen extends ProvidingWidget<HomeCubit, HomeData> {
     print(MediaQuery.of(context).size);
     return BlocProvider.value(
       value: cubit,
-      child: DragToMoveArea(
-        child: Scaffold(
-          // appBar: PreferredSize(
-          //   preferredSize: Size(double.infinity, 48),
-          //   child: Center(
-          //     child: Text("Comic Compress", style: context.textTheme.titleLarge),
-          //   ),
-          // ),
-          // appBar: AppBar(centerTitle: true, title: Text("Comic Compress")),
-          body: SingleChildScrollView(
-            child: Center(
-              child: SizedBox(
-                width: maxWidth,
-                child: Padding(
-                  padding: .all(8),
-                  child: Column(
-                    spacing: 8,
-                    children: [
-                      Wrap(
-                        runAlignment: .center,
-                        alignment: .center,
-                        crossAxisAlignment: .center,
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          SizedBox(
-                            width: 64,
-                            height: 86,
-                            child: CustomButton(
-                              text: "Help",
-                              icon: Icons.help_rounded,
-                              iconAxis: .vertical,
-                              padding: .symmetric(horizontal: 16, vertical: 12),
-                              borderRadius: .circular(12),
-                              onTap: cubit.startCompression,
-                            ),
+      child: Scaffold(
+        // appBar: PreferredSize(
+        //   preferredSize: Size(double.infinity, 48),
+        //   child: Center(
+        //     child: Text("Comic Compress", style: context.textTheme.titleLarge),
+        //   ),
+        // ),
+        // appBar: AppBar(centerTitle: true, title: Text("Comic Compress")),
+        body: SingleChildScrollView(
+          child: Center(
+            child: SizedBox(
+              width: maxWidth,
+              child: Padding(
+                padding: .all(8),
+                child: Column(
+                  spacing: 8,
+                  children: [
+                    Wrap(
+                      runAlignment: .center,
+                      alignment: .center,
+                      crossAxisAlignment: .center,
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        SizedBox(
+                          width: 64,
+                          height: 86,
+                          child: CustomButton(
+                            text: "Help",
+                            icon: Icons.help_rounded,
+                            iconAxis: .vertical,
+                            padding: .symmetric(horizontal: 16, vertical: 12),
+                            borderRadius: .circular(12),
+                            onTap: cubit.startCompression,
                           ),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: customBoxWidth - 72,
-                            ),
-                            child: FileBox<HomeCubit, HomeData>(
-                              selector: (state) => state.source,
-                              valueChanged: cubit.setSource,
-                              title: "Source Folder",
-                            ),
+                        ),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: customBoxWidth - 72,
                           ),
-                          FileBox<HomeCubit, HomeData>(
-                            selector: (state) => state.destination,
-                            valueChanged: cubit.mutate
-                                .by((a) => a.copyWith.destination)
-                                .at((s) => s!),
-                            title: "Destination Folder",
+                          child: FileBox<HomeCubit, HomeData>(
+                            selector: (state) => state.source,
+                            valueChanged: cubit.setSource,
+                            title: "Source Folder",
                           ),
-                          ImageSettingsBox(
-                            valueChanged: cubit.mutate.by(
-                              (e) => e.copyWith.imageSettings,
-                            ),
+                        ),
+                        FileBox<HomeCubit, HomeData>(
+                          selector: (state) => state.destination,
+                          valueChanged: cubit.mutate
+                              .by((a) => a.copyWith.destination)
+                              .at((s) => s!),
+                          title: "Destination Folder",
+                        ),
+                        ImageSettingsBox(
+                          valueChanged: cubit.mutate.by(
+                            (e) => e.copyWith.imageSettings,
                           ),
-                          MiscSettingsBox(
-                            valueChanged: cubit.mutate.by(
-                              (e) => e.copyWith.miscSettings,
-                            ),
+                        ),
+                        MiscSettingsBox(
+                          valueChanged: cubit.mutate.by(
+                            (e) => e.copyWith.miscSettings,
                           ),
-                          QueueBox(),
-                          ProgressStats(),
-                        ],
-                      ),
-                      BlocSelector<HomeCubit, HomeData, bool>(
-                        selector: (state) => state.pipelineState.started,
-                        builder: (context, state) => state
-                            ? Row(
-                                mainAxisSize: .min,
-                                children: [
-                                  BlocSelector<HomeCubit, HomeData, bool>(
-                                    selector: (state) =>
-                                        state.pipelineState.paused,
-                                    builder: (context, state) => CustomButton(
-                                      text: state ? "Resume" : "Gradual Pause",
-                                      icon: state
-                                          ? Icons.play_arrow_rounded
-                                          : Icons.pause,
-                                      padding: .symmetric(
-                                        horizontal: 16,
-                                        vertical: 12,
-                                      ),
-                                      borderRadius: .horizontal(
-                                        left: .circular(12),
-                                      ),
-                                      onTap: state
-                                          ? cubit.resumeCompression
-                                          : cubit.pauseCompression,
-                                    ),
-                                  ),
-                                  CustomButton(
-                                    text: "Stop",
-                                    icon: Icons.stop,
+                        ),
+                        QueueBox(),
+                        ProgressStats(),
+                      ],
+                    ),
+                    BlocSelector<HomeCubit, HomeData, bool>(
+                      selector: (state) => state.pipelineState.started,
+                      builder: (context, state) => state
+                          ? Row(
+                              mainAxisSize: .min,
+                              children: [
+                                BlocSelector<HomeCubit, HomeData, bool>(
+                                  selector: (state) =>
+                                      state.pipelineState.paused,
+                                  builder: (context, state) => CustomButton(
+                                    text: state ? "Resume" : "Gradual Pause",
+                                    icon: state
+                                        ? Icons.play_arrow_rounded
+                                        : Icons.pause,
                                     padding: .symmetric(
                                       horizontal: 16,
                                       vertical: 12,
                                     ),
                                     borderRadius: .horizontal(
-                                      right: .circular(12),
+                                      left: .circular(12),
                                     ),
-                                    onTap: cubit.stopCompression,
+                                    onTap: state
+                                        ? cubit.resumeCompression
+                                        : cubit.pauseCompression,
                                   ),
-                                ],
-                              )
-                            : BlocSelector<HomeCubit, HomeData, bool>(
-                                selector: (state) =>
-                                    state.progress != null &&
-                                    state.progress!.comicFiles.isNotEmpty,
-                                builder: (context, state) => CustomButton(
-                                  text: "Start",
-                                  icon: Icons.play_arrow_rounded,
+                                ),
+                                CustomButton(
+                                  text: "Stop",
+                                  icon: Icons.stop,
                                   padding: .symmetric(
                                     horizontal: 16,
                                     vertical: 12,
                                   ),
-                                  borderRadius: .circular(12),
-                                  onTap: cubit.startCompression,
-                                  enabled: state,
+                                  borderRadius: .horizontal(
+                                    right: .circular(12),
+                                  ),
+                                  onTap: cubit.stopCompression,
                                 ),
+                              ],
+                            )
+                          : BlocSelector<HomeCubit, HomeData, bool>(
+                              selector: (state) =>
+                                  state.progress != null &&
+                                  state.progress!.comicFiles.isNotEmpty,
+                              builder: (context, state) => CustomButton(
+                                text: "Start",
+                                icon: Icons.play_arrow_rounded,
+                                padding: .symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                borderRadius: .circular(12),
+                                onTap: cubit.startCompression,
+                                enabled: state,
                               ),
-                      ),
-                    ],
-                  ),
+                            ),
+                    ),
+                  ],
                 ),
               ),
             ),

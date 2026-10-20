@@ -101,7 +101,7 @@ class CompressionPipeline {
     await isolate.run(_filter, (
       path: unpackPath,
       tempPath: tempDir.path,
-      includeHidden: cubit.state.miscSettings.includeHidden,
+      filteredOutRegexps: cubit.state.miscSettings.filterSettings.excludedNames,
       normalizeImageNames: cubit.state.miscSettings.normalizeImageNames,
       flatten: cubit.state.miscSettings.flatten,
     ));
@@ -112,9 +112,19 @@ class CompressionPipeline {
   Future<void> dispatchCompress() async {
     final images = await Directory(unpackPath)
         .list(recursive: true)
-        .where(
-          (entity) => entity is File && path.extension(entity.path) != ".xml",
-        )
+        .where((entity) {
+          if (entity is! File) return false;
+          final relativePath = path.relative(entity.path, from: unpackPath);
+          final splitPath = path.split(relativePath);
+          final leaveUntouched = cubit
+              .state
+              .miscSettings
+              .filterSettings
+              .untouchedNames
+              .any((p) => splitPath.any((e) => p.hasMatch(e)));
+          if (leaveUntouched) return false;
+          return true;
+        })
         .toList();
     imageCount = images.length;
     for (final image in images) {
@@ -177,20 +187,12 @@ class CompressionPipeline {
     ({
       String path,
       String tempPath,
-      bool includeHidden,
+      List<RegExp> filteredOutRegexps,
       bool normalizeImageNames,
       bool flatten,
     })
     args,
   ) async {
-    const acceptedFileExtensions = [
-      ".jpg",
-      ".jpeg",
-      ".png",
-      ".webp",
-      ".jxl",
-      ".xml",
-    ];
     await Process.run("chmod", ["777", "-R", args.path]);
     final dir = Directory(args.path);
     final tmp = await Directory(args.tempPath).createTemp();
@@ -199,26 +201,24 @@ class CompressionPipeline {
     final files = await tmp.list(recursive: true).toList();
     for (var file in files) {
       if (file is! File) continue;
-      if (acceptedFileExtensions.contains(
-            path.extension(file.path).toLowerCase(),
-          ) &&
-          (args.includeHidden ||
-              path
-                  .split(path.relative(file.path, from: tmp.path))
-                  .none((e) => e.startsWith(".")))) {
-        final String newPath;
-        if (args.flatten) {
-          final basename = path.basename(file.path);
-          newPath = path.join(args.path, basename);
-        } else {
-          final relativePath = path.relative(file.path, from: tmp.path);
-          newPath = path.join(args.path, relativePath);
-        }
-        final renamedFile = File(newPath);
-        await renamedFile.create(recursive: true);
-        await renamedFile.delete();
-        await file.rename(newPath);
+      final relativePath = path.relative(file.path, from: tmp.path);
+      final splitPath = path.split(relativePath);
+      final nameNotAllowed = args.filteredOutRegexps.any(
+        (p) => splitPath.any((e) => p.hasMatch(e)),
+      );
+      if (nameNotAllowed) continue;
+      final String newPath;
+      if (args.flatten) {
+        final basename = path.basename(file.path);
+        newPath = path.join(args.path, basename);
+      } else {
+        final relativePath = path.relative(file.path, from: tmp.path);
+        newPath = path.join(args.path, relativePath);
       }
+      final renamedFile = File(newPath);
+      await renamedFile.create(recursive: true);
+      await renamedFile.delete();
+      await file.rename(newPath);
     }
     await tmp.delete(recursive: true);
   }

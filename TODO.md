@@ -1,6 +1,5 @@
 * Progress queue colors are wrong
 * 'Normalize names' implementation
-* File name filter regex functionality
 * Dependency check for cjxl, cwebp, cjpeg and warning screen
 * Info / help screen
 

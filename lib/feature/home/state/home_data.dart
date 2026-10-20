@@ -203,8 +203,8 @@ class MiscSettings with Equatable {
   /// Wheter to flatten archive structure. Only available when normalizing names.
   final bool flatten;
 
-  /// Whter to include hidden images and folders in the archive.
-  final bool includeHidden;
+  /// Settings for regex filtering operations.
+  final FilterSettings filterSettings;
 
   /// Number of job runners.
   final int threadCount;
@@ -218,7 +218,7 @@ class MiscSettings with Equatable {
   const new({
     required this.normalizeImageNames,
     required this.flatten,
-    required this.includeHidden,
+    required this.filterSettings,
     required this.threadCount,
     required this.copyNonComicFiles,
     required this.zipEffort,
@@ -227,7 +227,7 @@ class MiscSettings with Equatable {
   new blank()
     : normalizeImageNames = false,
       flatten = false,
-      includeHidden = true,
+      filterSettings = .blank(),
       threadCount = Platform.numberOfProcessors,
       copyNonComicFiles = true,
       zipEffort = 0;
@@ -236,10 +236,31 @@ class MiscSettings with Equatable {
     flatten,
     threadCount,
     normalizeImageNames,
-    includeHidden,
+    filterSettings,
     copyNonComicFiles,
     zipEffort,
   ];
+}
+
+/// Filters to apply to files in the archive.
+/// The regexes are matched against each individual component
+/// of the file path in the archive, not the entire path at once.
+@CopyWith()
+class FilterSettings with Equatable {
+  /// Files to exclude from the archive.
+  final List<RegExp> excludedNames;
+
+  /// Files to not reencode.
+  /// Files not included here and fail to reencode will not be in the final archive.
+  final List<RegExp> untouchedNames;
+
+  const new({required this.excludedNames, required this.untouchedNames});
+
+  new blank()
+    : excludedNames = [RegExp("^\\.")],
+      untouchedNames = [RegExp("^ComicInfo\\.xml\$")];
+  @override
+  List<Object?> get props => [excludedNames, untouchedNames];
 }
 
 /// Information about the compression progress of the selected folder.

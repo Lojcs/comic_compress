@@ -5,6 +5,7 @@ import '../extensions/context_extension.dart';
 class CustomButton extends StatelessWidget {
   final String text;
   final IconData? icon;
+  final double? iconSize;
   final Axis iconAxis;
   final void Function() onTap;
   final BorderRadius? borderRadius;
@@ -15,6 +16,7 @@ class CustomButton extends StatelessWidget {
     super.key,
     required this.text,
     this.icon,
+    this.iconSize,
     this.iconAxis = .horizontal,
     required this.onTap,
     this.borderRadius,
@@ -52,7 +54,11 @@ class CustomButton extends StatelessWidget {
               spacing: 8,
               children: [
                 if (icon != null)
-                  Icon(icon, color: context.colorScheme.onSecondaryContainer),
+                  Icon(
+                    icon,
+                    color: context.colorScheme.onSecondaryContainer,
+                    size: iconSize,
+                  ),
                 Text(
                   text,
                   style: (textStyle ?? textTheme.bodyMedium!).copyWith(

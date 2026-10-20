@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../constants.dart';
 import '../extensions/context_extension.dart';
@@ -19,30 +20,33 @@ class CustomBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 300),
-      curve: Curves.easeOutCubic,
-      constraints: BoxConstraints(maxWidth: customBoxWidth),
-      padding: .symmetric(horizontal: 16, vertical: dense ? 12 : 16),
-      decoration: BoxDecoration(
-        color: switch (type) {
-          .normal => colorScheme.surfaceContainer,
-          .accent => colorScheme.surface,
-          .selected => colorScheme.secondaryContainer,
-        },
-        border: .all(
+    return GestureDetector(
+      behavior: .opaque,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+        constraints: BoxConstraints(maxWidth: customBoxWidth),
+        padding: .symmetric(horizontal: 16, vertical: dense ? 12 : 16),
+        decoration: BoxDecoration(
           color: switch (type) {
             .normal => colorScheme.surfaceContainer,
             .accent => colorScheme.surface,
-            .selected => colorScheme.primary,
+            .selected => colorScheme.secondaryContainer,
           },
+          border: .all(
+            color: switch (type) {
+              .normal => colorScheme.surfaceContainer,
+              .accent => colorScheme.surface,
+              .selected => colorScheme.primary,
+            },
+          ),
+          borderRadius: .circular(8),
         ),
-        borderRadius: .circular(8),
-      ),
-      child: AnimatedSize(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
-        child: child,
+        child: AnimatedSize(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+          child: child,
+        ),
       ),
     );
   }

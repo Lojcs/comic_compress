@@ -17,40 +17,6 @@ abstract class ProvidingWidget<C extends Mubit<S>, S> extends StatelessWidget {
   S getValue() => cubit.state;
 }
 
-/// Caches the value of a selector so it can be accessed multiple times per build.
-class ValueCache<C extends Mubit<S>, S, T> {
-  final ValueSelector<S, T> _selector;
-
-  new({required this._selector});
-  late T _cache;
-  bool _fetched = false;
-  bool _watching = false;
-  late BuildContext _context;
-  set context(BuildContext ctx) {
-    _context = ctx;
-    _fetched = false;
-    _watching = false;
-  }
-
-  T get watch {
-    if (!_fetched || !_watching) {
-      _cache = _context.select<C, T>((c) => _selector(c.state));
-      _fetched = true;
-      _watching = true;
-    }
-    return _cache;
-  }
-
-  T doWatch() {
-    if (!_fetched || !_watching) {
-      _cache = _context.select<C, T>((c) => _selector(c.state));
-      _fetched = true;
-      _watching = true;
-    }
-    return _cache;
-  }
-}
-
 /// Widget to select from a mubit recursively with convenience methods.
 abstract class SelectingWidget<C extends Mubit<S>, S, T>
     extends StatelessWidget {
