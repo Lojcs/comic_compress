@@ -39,23 +39,11 @@ class MiscSettingsBox
                   valueChanged(val(context).copyWith.filterSettings(value)),
             ),
             CustomSwitchTile<HomeCubit, HomeData>(
-              title: "Normalize Image Names",
-              selector: (state) => selector(state).normalizeImageNames,
+              title: "Normalize Archive",
+              selector: (state) => selector(state).normalizeFlatten,
               valueChanged: (value) {
-                valueChanged(val(context).copyWith.normalizeImageNames(value));
-                if (!value) valueChanged(val(context).copyWith.flatten(false));
+                valueChanged(val(context).copyWith.normalizeFlatten(value));
               },
-            ),
-            BlocSelector<HomeCubit, HomeData, bool>(
-              selector: (state) => selector(state).normalizeImageNames,
-              builder: (context, state) =>
-                  CustomSwitchTile<HomeCubit, HomeData>(
-                    title: "Flatten Archive Hierarchy",
-                    selector: (state) => selector(state).flatten,
-                    valueChanged: (value) =>
-                        valueChanged(val(context).copyWith.flatten(value)),
-                    enabled: state,
-                  ),
             ),
             BlocSelector<HomeCubit, HomeData, int>(
               selector: (state) => selector(state).threadCount,

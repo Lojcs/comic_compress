@@ -447,9 +447,7 @@ extension $CJpegImageSettingsCopyWith on CJpegImageSettings {
 abstract class _$MiscSettingsCWProxy {
   MiscSettings filterSettings(FilterSettings filterSettings);
 
-  MiscSettings normalizeImageNames(bool normalizeImageNames);
-
-  MiscSettings flatten(bool flatten);
+  MiscSettings normalizeFlatten(bool normalizeFlatten);
 
   MiscSettings threadCount(int threadCount);
 
@@ -467,8 +465,7 @@ abstract class _$MiscSettingsCWProxy {
   /// ```
   MiscSettings call({
     FilterSettings filterSettings,
-    bool normalizeImageNames,
-    bool flatten,
+    bool normalizeFlatten,
     int threadCount,
     bool copyNonComicFiles,
     int zipEffort,
@@ -487,11 +484,8 @@ class _$MiscSettingsCWProxyImpl implements _$MiscSettingsCWProxy {
       call(filterSettings: filterSettings);
 
   @override
-  MiscSettings normalizeImageNames(bool normalizeImageNames) =>
-      call(normalizeImageNames: normalizeImageNames);
-
-  @override
-  MiscSettings flatten(bool flatten) => call(flatten: flatten);
+  MiscSettings normalizeFlatten(bool normalizeFlatten) =>
+      call(normalizeFlatten: normalizeFlatten);
 
   @override
   MiscSettings threadCount(int threadCount) => call(threadCount: threadCount);
@@ -514,8 +508,7 @@ class _$MiscSettingsCWProxyImpl implements _$MiscSettingsCWProxy {
   @override
   MiscSettings call({
     Object? filterSettings = const $CopyWithPlaceholder(),
-    Object? normalizeImageNames = const $CopyWithPlaceholder(),
-    Object? flatten = const $CopyWithPlaceholder(),
+    Object? normalizeFlatten = const $CopyWithPlaceholder(),
     Object? threadCount = const $CopyWithPlaceholder(),
     Object? copyNonComicFiles = const $CopyWithPlaceholder(),
     Object? zipEffort = const $CopyWithPlaceholder(),
@@ -527,16 +520,12 @@ class _$MiscSettingsCWProxyImpl implements _$MiscSettingsCWProxy {
           ? _value.filterSettings
           // ignore: cast_nullable_to_non_nullable
           : filterSettings as FilterSettings,
-      normalizeImageNames:
-          normalizeImageNames == const $CopyWithPlaceholder() ||
-              normalizeImageNames == null
-          ? _value.normalizeImageNames
+      normalizeFlatten:
+          normalizeFlatten == const $CopyWithPlaceholder() ||
+              normalizeFlatten == null
+          ? _value.normalizeFlatten
           // ignore: cast_nullable_to_non_nullable
-          : normalizeImageNames as bool,
-      flatten: flatten == const $CopyWithPlaceholder() || flatten == null
-          ? _value.flatten
-          // ignore: cast_nullable_to_non_nullable
-          : flatten as bool,
+          : normalizeFlatten as bool,
       threadCount:
           threadCount == const $CopyWithPlaceholder() || threadCount == null
           ? _value.threadCount

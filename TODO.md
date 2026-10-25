@@ -1,5 +1,4 @@
 * Progress queue colors are wrong
-* 'Normalize names' implementation
 * Dependency check for cjxl, cwebp, cjpeg and warning screen
 * Info / help screen
 

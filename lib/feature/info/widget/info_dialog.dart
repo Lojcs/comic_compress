@@ -103,9 +103,7 @@ class InfoDialog extends StatelessWidget {
                 TextSpan(
                   children: [
                     TextSpan(text: "Jpeg: ", style: textTheme.titleSmall),
-                    TextSpan(
-                      text: "Worst compression ratio and best adoption.",
-                    ),
+                    TextSpan(text: "Worst compression ratio, best adoption."),
                   ],
                 ),
               ),
@@ -146,24 +144,11 @@ class InfoDialog extends StatelessWidget {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: "Normalize Image Names: ",
+                      text: "Normalize Archive: ",
                       style: textTheme.titleSmall,
                     ),
                     TextSpan(
-                      text: "Renames all images in the comic archive to ascending numbers, preserving their alphanumeric order.",
-                    ),
-                  ],
-                ),
-              ),
-              Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "Flatten Archive Hierarchy: ",
-                      style: textTheme.titleSmall,
-                    ),
-                    TextSpan(
-                      text: "Moves all files to the archive's root, preserving their order. Only available with name normalization.",
+                      text: "Renames all images in the comic archive to ascending numbers located at the root of the archive, preserving their alphanumeric order.",
                     ),
                   ],
                 ),

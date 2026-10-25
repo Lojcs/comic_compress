@@ -200,11 +200,9 @@ class MiscSettings with Equatable {
   /// Settings for regex filtering operations.
   final FilterSettings filterSettings;
 
-  /// Wheter to convert alphanumerically sorted image names to numeric order.
-  final bool normalizeImageNames;
-
-  /// Wheter to flatten archive structure. Only available when normalizing names.
-  final bool flatten;
+  /// Wheter to convert alphanumerically sorted image paths
+  /// to numeric names at archive root.
+  final bool normalizeFlatten;
 
   /// Number of job runners.
   final int threadCount;
@@ -217,8 +215,7 @@ class MiscSettings with Equatable {
 
   const new({
     required this.filterSettings,
-    required this.normalizeImageNames,
-    required this.flatten,
+    required this.normalizeFlatten,
     required this.threadCount,
     required this.copyNonComicFiles,
     required this.zipEffort,
@@ -226,15 +223,13 @@ class MiscSettings with Equatable {
 
   new blank()
     : filterSettings = .blank(),
-      normalizeImageNames = false,
-      flatten = false,
+      normalizeFlatten = false,
       threadCount = Platform.numberOfProcessors,
       copyNonComicFiles = true,
       zipEffort = 0;
   @override
   List<Object?> get props => [
-    normalizeImageNames,
-    flatten,
+    normalizeFlatten,
     threadCount,
     filterSettings,
     copyNonComicFiles,

@@ -101,9 +101,9 @@ class CompressionPipeline {
     await isolate.run(_filter, (
       path: unpackPath,
       tempPath: tempDir.path,
-      filteredOutRegexps: cubit.state.miscSettings.filterSettings.excludedNames,
-      normalizeImageNames: cubit.state.miscSettings.normalizeImageNames,
-      flatten: cubit.state.miscSettings.flatten,
+      excludedNames: cubit.state.miscSettings.filterSettings.excludedNames,
+      untouchedNames: cubit.state.miscSettings.filterSettings.untouchedNames,
+      normalizeFlatten: cubit.state.miscSettings.normalizeFlatten,
     ));
     await dispatchCompress();
   }
@@ -187,9 +187,9 @@ class CompressionPipeline {
     ({
       String path,
       String tempPath,
-      List<RegExp> filteredOutRegexps,
-      bool normalizeImageNames,
-      bool flatten,
+      List<RegExp> excludedNames,
+      List<RegExp> untouchedNames,
+      bool normalizeFlatten,
     })
     args,
   ) async {
@@ -198,30 +198,56 @@ class CompressionPipeline {
     final tmp = await Directory(args.tempPath).createTemp();
     await tmp.delete();
     await dir.rename(tmp.path);
+
     final files = await tmp.list(recursive: true).toList();
-    for (var file in files) {
-      if (file is! File) continue;
-      final relativePath = path.relative(file.path, from: tmp.path);
+    final List<String> relativeFilePaths;
+    if (args.normalizeFlatten) {
+      relativeFilePaths = files
+          .whereType<File>()
+          .map((e) => path.relative(e.path, from: tmp.path))
+          .sorted();
+    } else {
+      relativeFilePaths = files
+          .whereType<File>()
+          .map((e) => path.relative(e.path, from: tmp.path))
+          .toList();
+    }
+    final fileCountDigits = _digitCount(relativeFilePaths.length);
+
+    for (var (idx, relativePath) in relativeFilePaths.indexed) {
       final splitPath = path.split(relativePath);
-      final nameNotAllowed = args.filteredOutRegexps.any(
+      final fileNotAllowed = args.excludedNames.any(
         (p) => splitPath.any((e) => p.hasMatch(e)),
       );
-      if (nameNotAllowed) continue;
+      if (fileNotAllowed) continue;
       final String newPath;
-      if (args.flatten) {
-        final basename = path.basename(file.path);
-        newPath = path.join(args.path, basename);
+      final fileUntouched = args.untouchedNames.any(
+        (p) => splitPath.any((e) => p.hasMatch(e)),
+      );
+      if (args.normalizeFlatten && !fileUntouched) {
+        newPath = path.join(args.path, idx.toString().padLeft(fileCountDigits));
       } else {
-        final relativePath = path.relative(file.path, from: tmp.path);
         newPath = path.join(args.path, relativePath);
       }
+      final file = File(relativePath);
       final renamedFile = File(newPath);
       await renamedFile.create(recursive: true);
       await renamedFile.delete();
       await file.rename(newPath);
     }
+
     await tmp.delete(recursive: true);
   }
+
+  static int _digitCount(int number) => switch (number) {
+    < 10 => 1,
+    < 100 => 2,
+    < 1000 => 3,
+    < 10000 => 4,
+    < 100000 => 5,
+    < 1000000 => 6,
+    _ => 20,
+  };
 
   static Future<void> _compress(
     ({String filePath, ImageSettings settings}) args,
