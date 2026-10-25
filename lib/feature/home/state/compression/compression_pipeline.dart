@@ -115,13 +115,10 @@ class CompressionPipeline {
         .where((entity) {
           if (entity is! File) return false;
           final relativePath = path.relative(entity.path, from: unpackPath);
-          final splitPath = path.split(relativePath);
-          final leaveUntouched = cubit
-              .state
-              .miscSettings
-              .filterSettings
-              .untouchedNames
-              .any((p) => splitPath.any((e) => p.hasMatch(e)));
+          final leaveUntouched = _pathMatchesPattern(
+            relativePath,
+            cubit.state.miscSettings.filterSettings.untouchedNames,
+          );
           if (leaveUntouched) return false;
           return true;
         })
@@ -204,32 +201,36 @@ class CompressionPipeline {
     if (args.normalizeFlatten) {
       relativeFilePaths = files
           .whereType<File>()
+          .where((e) => !_pathMatchesPattern(e.path, args.excludedNames))
           .map((e) => path.relative(e.path, from: tmp.path))
           .sorted();
     } else {
       relativeFilePaths = files
           .whereType<File>()
+          .where((e) => !_pathMatchesPattern(e.path, args.excludedNames))
           .map((e) => path.relative(e.path, from: tmp.path))
           .toList();
     }
     final fileCountDigits = _digitCount(relativeFilePaths.length);
 
     for (var (idx, relativePath) in relativeFilePaths.indexed) {
-      final splitPath = path.split(relativePath);
-      final fileNotAllowed = args.excludedNames.any(
-        (p) => splitPath.any((e) => p.hasMatch(e)),
+      final fileUntouched = _pathMatchesPattern(
+        relativePath,
+        args.untouchedNames,
       );
-      if (fileNotAllowed) continue;
       final String newPath;
-      final fileUntouched = args.untouchedNames.any(
-        (p) => splitPath.any((e) => p.hasMatch(e)),
-      );
       if (args.normalizeFlatten && !fileUntouched) {
-        newPath = path.join(args.path, idx.toString().padLeft(fileCountDigits));
+        newPath = path.join(
+          args.path,
+          path.setExtension(
+            idx.toString().padLeft(fileCountDigits),
+            path.extension(relativePath),
+          ),
+        );
       } else {
-        newPath = path.join(args.path, relativePath);
+        newPath = path.join(args.path, path.basename(relativePath));
       }
-      final file = File(relativePath);
+      final file = File(path.join(tmp.path, relativePath));
       final renamedFile = File(newPath);
       await renamedFile.create(recursive: true);
       await renamedFile.delete();
@@ -237,6 +238,11 @@ class CompressionPipeline {
     }
 
     await tmp.delete(recursive: true);
+  }
+
+  static bool _pathMatchesPattern(String relativePath, List<RegExp> patterns) {
+    final splitPath = path.split(relativePath);
+    return patterns.any((p) => splitPath.any((e) => p.hasMatch(e)));
   }
 
   static int _digitCount(int number) => switch (number) {
@@ -261,6 +267,10 @@ class CompressionPipeline {
         final losslessJpeg =
             settings.distance == 0 &&
             (extension == "jpeg" || extension == "jpg");
+        final intermediaryPath = path.setExtension(
+          extensionlessPath,
+          ".jxl.tmp",
+        );
         final destinationPath = path.setExtension(extensionlessPath, ".jxl");
         result = await Processr.run("cjxl", [
           "-e",
@@ -274,12 +284,12 @@ class CompressionPipeline {
           "--lossless_jpeg",
           losslessJpeg ? "1" : "0",
           args.filePath,
-          extensionlessPath,
+          intermediaryPath,
         ]);
         await File(args.filePath).delete();
-        final extensionlessFile = File(extensionlessPath);
-        if (await extensionlessFile.exists()) {
-          await extensionlessFile.rename(destinationPath);
+        final intermediaryFile = File(intermediaryPath);
+        if (await intermediaryFile.exists()) {
+          await intermediaryFile.rename(destinationPath);
         }
       case .webp:
         final settings = args.settings as WebpImageSettings;
@@ -348,5 +358,6 @@ class CompressionPipeline {
     await toFile.create(recursive: true);
     await fromFile.copy(args.to);
     await fromFile.delete();
+    // await toFile.readAsBytes(); // To ensure it finished copying.
   }
 }

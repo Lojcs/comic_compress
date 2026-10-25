@@ -24,8 +24,8 @@ import 'progress_queue.dart';
 class HomeScreen extends ProvidingWidget<HomeCubit, HomeData> {
   static const double minWidth = 516;
   static const double maxWidth = 1032;
-  static const double minHeight = 672;
-  static const double folderHeight = 160;
+  static const double minHeight = 640;
+  static const double folderHeight = 148;
   static const double runningHeight = 160;
   static Size size(ImageSettings settings, bool folderOpen) => Size(
     minWidth,
@@ -157,8 +157,7 @@ class HomeScreen extends ProvidingWidget<HomeCubit, HomeData> {
                             )
                           : BlocSelector<HomeCubit, HomeData, bool>(
                               selector: (state) =>
-                                  state.progress != null &&
-                                  state.progress!.comicFiles.isNotEmpty,
+                                  state.progress.comicFiles.isNotEmpty,
                               builder: (context, state) => CustomButton(
                                 text: "Start",
                                 icon: Icons.play_arrow_rounded,

@@ -23,7 +23,7 @@ class HomeData with Equatable {
   final MiscSettings miscSettings;
 
   /// Progress of compression.
-  final Progress? progress;
+  final Progress progress;
 
   /// Progress of compression.
   final PipelineState pipelineState;
@@ -41,7 +41,7 @@ class HomeData with Equatable {
       destination = Directory(path.context.current),
       imageSettings = .blank(),
       miscSettings = .blank(),
-      progress = null,
+      progress = .initial(),
       pipelineState = .blank();
 
   @override
@@ -282,6 +282,9 @@ class Progress with Equatable {
   /// Size of the finished comics.
   final int finishedSize;
 
+  /// Original size of the finished comics.
+  final int finishedOriginalSize;
+
   /// Effective time when the compression started.
   /// If compression is paused then resumed this time is shifted forwards by
   /// the paused period.
@@ -297,6 +300,7 @@ class Progress with Equatable {
     required this.inProgressIndecies,
     required this.finishedCount,
     required this.finishedSize,
+    required this.finishedOriginalSize,
     required this.startTime,
     required this.pauseTime,
   });
@@ -312,8 +316,20 @@ class Progress with Equatable {
        inProgressIndecies = [],
        finishedCount = 0,
        finishedSize = 0,
+       finishedOriginalSize = 0,
        startTime = null,
        pauseTime = null;
+  const new initial()
+    : comicFiles = const [],
+      otherFiles = const [],
+      comicFilesSize = 0,
+      otherFilesSize = 0,
+      inProgressIndecies = const [],
+      finishedCount = 0,
+      finishedSize = 0,
+      finishedOriginalSize = 0,
+      startTime = null,
+      pauseTime = null;
 
   int get startedCount => inProgressIndecies.length + finishedCount;
   int get notStartedCount => comicFiles.length - startedCount;
@@ -322,13 +338,16 @@ class Progress with Equatable {
   double? get filesPerSecond =>
       ongoingTime == null ? null : finishedCount / ongoingTime!.inSeconds;
   double? get bytesPerSecond =>
-      ongoingTime == null ? null : finishedCount / ongoingTime!.inSeconds;
+      ongoingTime == null ? null : finishedSize / ongoingTime!.inSeconds;
+  double? get originalBytesPerSecond => ongoingTime == null
+      ? null
+      : finishedOriginalSize / ongoingTime!.inSeconds;
   double? get remainingSecondsFiles => filesPerSecond == null
       ? null
       : (comicFiles.length - finishedCount) / filesPerSecond!;
   double? get remainingSecondsBytes => bytesPerSecond == null
       ? null
-      : (comicFiles.length - finishedCount) / bytesPerSecond!;
+      : (comicFilesSize - finishedOriginalSize) / originalBytesPerSecond!;
 
   @override
   List<Object?> get props => [

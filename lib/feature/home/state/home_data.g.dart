@@ -15,7 +15,7 @@ abstract class _$HomeDataCWProxy {
 
   HomeData miscSettings(MiscSettings miscSettings);
 
-  HomeData progress(Progress? progress);
+  HomeData progress(Progress progress);
 
   HomeData pipelineState(PipelineState pipelineState);
 
@@ -32,7 +32,7 @@ abstract class _$HomeDataCWProxy {
     Directory destination,
     ImageSettings imageSettings,
     MiscSettings miscSettings,
-    Progress? progress,
+    Progress progress,
     PipelineState pipelineState,
   });
 }
@@ -59,7 +59,7 @@ class _$HomeDataCWProxyImpl implements _$HomeDataCWProxy {
       call(miscSettings: miscSettings);
 
   @override
-  HomeData progress(Progress? progress) => call(progress: progress);
+  HomeData progress(Progress progress) => call(progress: progress);
 
   @override
   HomeData pipelineState(PipelineState pipelineState) =>
@@ -102,10 +102,10 @@ class _$HomeDataCWProxyImpl implements _$HomeDataCWProxy {
           ? _value.miscSettings
           // ignore: cast_nullable_to_non_nullable
           : miscSettings as MiscSettings,
-      progress: progress == const $CopyWithPlaceholder()
+      progress: progress == const $CopyWithPlaceholder() || progress == null
           ? _value.progress
           // ignore: cast_nullable_to_non_nullable
-          : progress as Progress?,
+          : progress as Progress,
       pipelineState:
           pipelineState == const $CopyWithPlaceholder() || pipelineState == null
           ? _value.pipelineState
@@ -637,6 +637,8 @@ abstract class _$ProgressCWProxy {
 
   Progress finishedSize(int finishedSize);
 
+  Progress finishedOriginalSize(int finishedOriginalSize);
+
   Progress startTime(DateTime? startTime);
 
   Progress pauseTime(DateTime? pauseTime);
@@ -657,6 +659,7 @@ abstract class _$ProgressCWProxy {
     List<int> inProgressIndecies,
     int finishedCount,
     int finishedSize,
+    int finishedOriginalSize,
     DateTime? startTime,
     DateTime? pauseTime,
   });
@@ -696,6 +699,10 @@ class _$ProgressCWProxyImpl implements _$ProgressCWProxy {
   Progress finishedSize(int finishedSize) => call(finishedSize: finishedSize);
 
   @override
+  Progress finishedOriginalSize(int finishedOriginalSize) =>
+      call(finishedOriginalSize: finishedOriginalSize);
+
+  @override
   Progress startTime(DateTime? startTime) => call(startTime: startTime);
 
   @override
@@ -718,6 +725,7 @@ class _$ProgressCWProxyImpl implements _$ProgressCWProxy {
     Object? inProgressIndecies = const $CopyWithPlaceholder(),
     Object? finishedCount = const $CopyWithPlaceholder(),
     Object? finishedSize = const $CopyWithPlaceholder(),
+    Object? finishedOriginalSize = const $CopyWithPlaceholder(),
     Object? startTime = const $CopyWithPlaceholder(),
     Object? pauseTime = const $CopyWithPlaceholder(),
   }) {
@@ -760,6 +768,12 @@ class _$ProgressCWProxyImpl implements _$ProgressCWProxy {
           ? _value.finishedSize
           // ignore: cast_nullable_to_non_nullable
           : finishedSize as int,
+      finishedOriginalSize:
+          finishedOriginalSize == const $CopyWithPlaceholder() ||
+              finishedOriginalSize == null
+          ? _value.finishedOriginalSize
+          // ignore: cast_nullable_to_non_nullable
+          : finishedOriginalSize as int,
       startTime: startTime == const $CopyWithPlaceholder()
           ? _value.startTime
           // ignore: cast_nullable_to_non_nullable

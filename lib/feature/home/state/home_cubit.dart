@@ -81,7 +81,14 @@ class HomeCubit extends Mubit<HomeData> {
     emit(
       state.copyWith(
         pipelineState: state.pipelineState.copyWith.started(true),
-        progress: state.progress!.copyWith.startTime(DateTime.now()),
+        progress: state.progress!.copyWith(
+          inProgressIndecies: [],
+          finishedCount: 0,
+          finishedOriginalSize: 0,
+          finishedSize: 0,
+          startTime: DateTime.now(),
+          pauseTime: null,
+        ),
       ),
     );
   }
@@ -152,12 +159,20 @@ class HomeCubit extends Mubit<HomeData> {
       );
     }
     if (stage == .finished) {
+      final filePathNoExt = path.withoutExtension(
+        state.progress!.comicFiles[index].relativePath,
+      );
       final finishedFilePath = path.join(
         state.destination.path,
+        path.setExtension(filePathNoExt, ".cbz"),
+      );
+      final originalFilePath = path.join(
+        state.source!.path,
         state.progress!.comicFiles[index].relativePath,
       );
       await Future.pause(Duration(milliseconds: 500));
-      final stat = await File(finishedFilePath).stat(); // How's this wrong??!!
+      final stat = await File(finishedFilePath).stat();
+      final originalStat = await File(originalFilePath).stat();
       emit(
         state.copyWith.progress(
           state.progress!.copyWith(
@@ -165,6 +180,8 @@ class HomeCubit extends Mubit<HomeData> {
               ..remove(index),
             finishedCount: state.progress!.finishedCount + 1,
             finishedSize: state.progress!.finishedSize + stat.size,
+            finishedOriginalSize:
+                state.progress.finishedOriginalSize + originalStat.size,
           ),
         ),
       );

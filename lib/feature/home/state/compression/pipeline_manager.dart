@@ -68,7 +68,7 @@ class PipelineManager {
       }
       isolate.kill();
       _isolates.remove(isolate);
-      if (_isolates.isEmpty) stop();
+      if (_isolates.isEmpty) cubit.stopCompression();
     } on IsolatedKilledException {
       // Do nothing
     }
@@ -79,7 +79,7 @@ class PipelineManager {
   Future<void> start() async {
     tempDir = await Directory.systemTemp.createTemp("comic_compress");
     if (cubit.state.miscSettings.copyNonComicFiles) await copyOtherFiles();
-    for (var i = 0; i < cubit.state.miscSettings.threadCount; i++) {
+    for (var i = 0; i < cubit.state.miscSettings.threadCount * 0.25; i++) {
       CompressionPipeline.start(cubit, tempDir, addJob);
     }
     for (var i = 0; i < cubit.state.miscSettings.threadCount; i++) {

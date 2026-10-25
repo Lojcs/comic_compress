@@ -22,10 +22,10 @@ class ProgressStats extends SelectingWidget<HomeCubit, HomeData, Progress?> {
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
     return BlocSelector<HomeCubit, HomeData, bool>(
-      selector: (state) => selector(state) == null,
+      selector: (state) => selector(state)!.comicFiles.isEmpty,
       builder: (context, state) => TitledCustomBox(
         title: "Stats",
-        closedReason: "No folder selected.",
+        closedReason: "No files selected.",
         open: !state,
         child: Table(
           columnWidths: {
@@ -104,9 +104,14 @@ class ProgressStats extends SelectingWidget<HomeCubit, HomeData, Progress?> {
                 ),
                 Align(
                   alignment: .centerRight,
-                  child: BlocSelector<HomeCubit, HomeData, int>(
-                    selector: (state) => selector(state)!.finishedSize,
-                    builder: (context, state) => Text(_sizeToString(state)),
+                  child: BlocSelector<HomeCubit, HomeData, (int, int)>(
+                    selector: (state) => (
+                      selector(state)!.finishedOriginalSize,
+                      selector(state)!.finishedSize,
+                    ),
+                    builder: (context, state) => Text(
+                      "${_sizeToString(state.$1)} -> ${_sizeToString(state.$2)}",
+                    ),
                   ),
                 ),
               ],
@@ -126,7 +131,8 @@ class ProgressStats extends SelectingWidget<HomeCubit, HomeData, Progress?> {
                 Align(
                   alignment: .centerRight,
                   child: BlocSelector<HomeCubit, HomeData, double?>(
-                    selector: (state) => selector(state)!.bytesPerSecond,
+                    selector: (state) =>
+                        selector(state)!.originalBytesPerSecond,
                     builder: (context, state) =>
                         state == null || state.isNaN || state.isInfinite
                         ? Text("...")

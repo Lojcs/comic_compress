@@ -21,6 +21,7 @@ class TitledCustomBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
     return CustomBox(
+      dense: false,
       child: open
           ? Column(
               crossAxisAlignment: .start,

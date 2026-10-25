@@ -32,7 +32,7 @@ class FileBox<C extends Mubit<T>, T> extends SelectingWidget<C, T, Directory?> {
     return StatefulBuilder(
       builder: (context, setState) => CustomBox(
         type: hovering ? .selected : .normal,
-        dense: !large,
+        dense: false,
         child: DropRegion(
           hitTestBehavior: .opaque,
           formats: [Formats.fileUri],

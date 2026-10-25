@@ -26,7 +26,10 @@ class CustomBox extends StatelessWidget {
         duration: Duration(milliseconds: 300),
         curve: Curves.easeOutCubic,
         constraints: BoxConstraints(maxWidth: customBoxWidth),
-        padding: .symmetric(horizontal: 16, vertical: dense ? 12 : 16),
+        padding: .symmetric(
+          horizontal: dense ? 6 : 16,
+          vertical: dense ? 3 : 12,
+        ),
         decoration: BoxDecoration(
           color: switch (type) {
             .normal => colorScheme.surfaceContainer,

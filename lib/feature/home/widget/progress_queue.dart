@@ -28,11 +28,11 @@ class QueueBox extends SelectingWidget<HomeCubit, HomeData, Progress?> {
         child: BlocSelector<HomeCubit, HomeData, List<int>>(
           selector: (state) => selector(state)!.inProgressIndecies,
           builder: (context, state) => SizedBox(
-            height: 400,
+            height: 244,
             child: ListView.builder(
               itemCount: state.length,
               itemBuilder: (context, index) => Padding(
-                padding: .symmetric(vertical: 4),
+                padding: .symmetric(vertical: 1.5),
                 child: _QueueItem(index: state[index]),
               ),
             ),
@@ -57,16 +57,17 @@ class _QueueItem extends StatelessWidget {
         mainAxisAlignment: .spaceBetween,
         children: [
           SizedBox(
-            width: 200,
+            width: 275,
             child: BlocSelector<HomeCubit, HomeData, String>(
               selector: (state) =>
                   state.progress!.comicFiles[index].relativePath,
               builder: (context, state) =>
-                  Text(path.basename(state), style: textTheme.labelMedium),
+                  Text(path.basename(state), style: textTheme.labelSmall),
             ),
           ),
           SizedBox(
-            width: 200,
+            width: 160,
+            height: 32,
             child: Stack(
               alignment: .center,
               children: [
@@ -74,35 +75,25 @@ class _QueueItem extends StatelessWidget {
                   selector: (state) =>
                       state.progress!.comicFiles[index].compressionStageRatio,
                   builder: (context, state) => LinearProgressIndicator(
-                    minHeight: 48,
+                    minHeight: 28,
                     borderRadius: .circular(8),
                     value: state,
+                    backgroundColor: context.colorScheme.surfaceContainerLow,
+                    color: context.colorScheme.secondaryContainer,
                   ),
                 ),
                 BlocSelector<HomeCubit, HomeData, PipelineStage>(
                   selector: (state) => state.progress!.comicFiles[index].stage,
-                  builder: (context, state) => switch (state) {
-                    .queued => Column(
-                      children: [Text("0 / 7"), Text("Queued")],
-                    ),
-                    .copy => Column(children: [Text("1 / 7"), Text("Copying")]),
-                    .unpack => Column(
-                      children: [Text("2 / 7"), Text("Unpacking")],
-                    ),
-                    .filter => Column(
-                      children: [Text("3 / 7"), Text("Filtering")],
-                    ),
-                    .compress => Column(
-                      children: [Text("4 / 7"), Text("Compressing")],
-                    ),
-                    .repack => Column(
-                      children: [Text("5 / 7"), Text("Repacking")],
-                    ),
-                    .move => Column(children: [Text("6 / 7"), Text("Moving")]),
-                    .finished => Column(
-                      children: [Text("7 / 7"), Text("Finished")],
-                    ),
-                  },
+                  builder: (context, state) => Text(switch (state) {
+                    .queued => "0 / 7 Queued",
+                    .copy => "1 / 7 Copying",
+                    .unpack => "2 / 7 Unpacking",
+                    .filter => "3 / 7 Filtering",
+                    .compress => "4 / 7 Compressing",
+                    .repack => "5 / 7 Repacking",
+                    .move => "6 / 7 Moving",
+                    .finished => "7 / 7 Finished",
+                  }, style: textTheme.bodySmall),
                 ),
               ],
             ),
