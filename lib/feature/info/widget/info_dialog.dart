@@ -27,6 +27,7 @@ class InfoDialog extends StatelessWidget {
               Text("Comic Compress", style: textTheme.titleLarge),
               Text("A Flutter program to compress and filter comic files."),
               Text("Developed with ❤️‍🔥 and 🚫🤖 by Lojcs."),
+              Text("Licensed under GPLv3."),
               Row(
                 mainAxisAlignment: .center,
                 children: [

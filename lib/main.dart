@@ -1,5 +1,6 @@
 import 'package:comic_compress/core/state/theme_mode.dart';
 import 'package:comic_compress/feature/home/widget/home_screen.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:window_manager/window_manager.dart';
@@ -14,11 +15,13 @@ void main() async {
     await windowManager.setMinimumSize(HomeScreen.minSize);
     // await windowManager.setMaximumSize(HomeScreen.maxSize);
   });
-  runApp(const MyApp());
+  final color = await DynamicColorPlugin.getAccentColor();
+  runApp(MyApp(color: color ?? Colors.deepOrange));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Color color;
+  const new({super.key, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -28,16 +31,14 @@ class MyApp extends StatelessWidget {
         builder: (context, state) => MaterialApp(
           title: 'Transcript Checker',
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-          ),
+          theme: ThemeData(colorScheme: .fromSeed(seedColor: color)),
           darkTheme: ThemeData(
             colorScheme: .fromSeed(
-              seedColor: Colors.deepPurple,
+              seedColor: color,
               brightness: .dark,
-            ),
+            ).copyWith(),
           ),
-          themeMode: state,
+          // themeMode: state,
           home: HomeScreen(),
         ),
       ),
