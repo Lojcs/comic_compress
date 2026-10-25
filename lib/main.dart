@@ -29,11 +29,11 @@ class MyApp extends StatelessWidget {
           title: 'Transcript Checker',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            colorScheme: .fromSeed(seedColor: Colors.deepOrange),
+            colorScheme: .fromSeed(seedColor: Colors.deepPurple),
           ),
           darkTheme: ThemeData(
             colorScheme: .fromSeed(
-              seedColor: Colors.deepOrange,
+              seedColor: Colors.deepPurple,
               brightness: .dark,
             ),
           ),

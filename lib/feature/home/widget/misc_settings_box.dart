@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/constants.dart';
 import '../../../core/extensions/context_extension.dart';
 import '../../../core/extensions/function_extension.dart';
 import '../../../core/widget/controlled_text_form_field.dart';
@@ -32,6 +33,11 @@ class MiscSettingsBox
           crossAxisAlignment: .start,
           spacing: 8,
           children: [
+            _FilterOutNames(
+              selector: (state) => selector(state).filterSettings,
+              valueChanged: (value) =>
+                  valueChanged(val(context).copyWith.filterSettings(value)),
+            ),
             CustomSwitchTile<HomeCubit, HomeData>(
               title: "Normalize Image Names",
               selector: (state) => selector(state).normalizeImageNames,
@@ -50,11 +56,6 @@ class MiscSettingsBox
                         valueChanged(val(context).copyWith.flatten(value)),
                     enabled: state,
                   ),
-            ),
-            _FilterOutNames(
-              selector: (state) => selector(state).filterSettings,
-              valueChanged: (value) =>
-                  valueChanged(val(context).copyWith.filterSettings(value)),
             ),
             BlocSelector<HomeCubit, HomeData, int>(
               selector: (state) => selector(state).threadCount,
@@ -134,6 +135,7 @@ class _FilterOutNamesDialog
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: .start,
+            mainAxisSize: .min,
             spacing: 8,
             children: [
               Text("Archive Filter", style: textTheme.titleMedium),

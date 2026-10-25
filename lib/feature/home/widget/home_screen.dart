@@ -13,6 +13,7 @@ import '../../../core/widget/custom_slider.dart';
 import '../../../core/widget/custom_switch_tile.dart';
 import '../../../core/widget/file_box.dart';
 import '../../../core/widget/recursive_mubit_widget.dart';
+import '../../info/widget/info_dialog.dart';
 import '../state/home_cubit.dart';
 import '../state/home_data.dart';
 import 'compression_settings_box.dart';
@@ -69,12 +70,18 @@ class HomeScreen extends ProvidingWidget<HomeCubit, HomeData> {
                           width: 64,
                           height: 86,
                           child: CustomButton(
-                            text: "Help",
+                            text: "Info",
                             icon: Icons.help_rounded,
                             iconAxis: .vertical,
                             padding: .symmetric(horizontal: 16, vertical: 12),
                             borderRadius: .circular(12),
-                            onTap: cubit.startCompression,
+                            onTap: () => showDialog(
+                              context: context,
+                              builder: (context) => BlocProvider.value(
+                                value: cubit,
+                                child: InfoDialog(),
+                              ),
+                            ),
                           ),
                         ),
                         ConstrainedBox(

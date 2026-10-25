@@ -197,14 +197,14 @@ final class CJpegImageSettings extends ImageSettings {
 /// Misc settings to use during compression.
 @CopyWith()
 class MiscSettings with Equatable {
+  /// Settings for regex filtering operations.
+  final FilterSettings filterSettings;
+
   /// Wheter to convert alphanumerically sorted image names to numeric order.
   final bool normalizeImageNames;
 
   /// Wheter to flatten archive structure. Only available when normalizing names.
   final bool flatten;
-
-  /// Settings for regex filtering operations.
-  final FilterSettings filterSettings;
 
   /// Number of job runners.
   final int threadCount;
@@ -216,26 +216,26 @@ class MiscSettings with Equatable {
   final int zipEffort;
 
   const new({
+    required this.filterSettings,
     required this.normalizeImageNames,
     required this.flatten,
-    required this.filterSettings,
     required this.threadCount,
     required this.copyNonComicFiles,
     required this.zipEffort,
   });
 
   new blank()
-    : normalizeImageNames = false,
+    : filterSettings = .blank(),
+      normalizeImageNames = false,
       flatten = false,
-      filterSettings = .blank(),
       threadCount = Platform.numberOfProcessors,
       copyNonComicFiles = true,
       zipEffort = 0;
   @override
   List<Object?> get props => [
+    normalizeImageNames,
     flatten,
     threadCount,
-    normalizeImageNames,
     filterSettings,
     copyNonComicFiles,
     zipEffort,
