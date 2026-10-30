@@ -26,7 +26,7 @@ class InfoDialog extends StatelessWidget {
             children: [
               Text("Comic Compress", style: textTheme.titleLarge),
               Text("A Flutter program to compress and filter comic files."),
-              Text("Developed with ❤️‍🔥 and 🚫🤖 by Lojcs."),
+              Text("Developed with ❤️‍🔥 and 🧠 by Lojcs."),
               Text("Licensed under GPLv3."),
               Row(
                 mainAxisAlignment: .center,
@@ -184,6 +184,19 @@ class InfoDialog extends StatelessWidget {
                     TextSpan(text: "Zip Effort: ", style: textTheme.titleSmall),
                     TextSpan(
                       text: "Effort for the archive zip. Higher numbers increase compression time and might decrease file size.",
+                    ),
+                  ],
+                ),
+              ),
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "Other operations: ",
+                      style: textTheme.titleSmall,
+                    ),
+                    TextSpan(
+                      text: "Comic compress also modifies the permissions of the archive to 777 (allow all) and strips image metadata. These operations can't be disabled.",
                     ),
                   ],
                 ),

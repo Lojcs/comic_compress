@@ -1,1 +1,0 @@
-* Dependency check for cjxl, cwebp, cjpeg and warning screen

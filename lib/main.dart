@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'feature/dependency_check/state/dependency_check_cubit.dart';
+import 'feature/dependency_check/widget/dependency_fail_screen.dart';
 import 'feature/home/state/home_data.dart';
 
 void main() async {
@@ -18,12 +20,22 @@ void main() async {
     // await windowManager.setMaximumSize(HomeScreen.maxSize);
   });
   final color = await DynamicColorPlugin.getAccentColor();
-  runApp(MyApp(color: color ?? Colors.deepOrange));
+  final dependencies = DependencyCheckCubit();
+  final depsSatisfied = await dependencies.check();
+  runApp(
+    MyApp(
+      color: color ?? Colors.deepOrange,
+      home: depsSatisfied
+          ? HomeScreen()
+          : DependencyFailScreen(cubit: dependencies),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   final Color color;
-  const new({super.key, required this.color});
+  final Widget home;
+  const new({super.key, required this.color, required this.home});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +53,7 @@ class MyApp extends StatelessWidget {
             ).copyWith(),
           ),
           // themeMode: state,
-          home: HomeScreen(),
+          home: home,
         ),
       ),
     );
