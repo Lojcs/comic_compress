@@ -99,7 +99,7 @@ class PipelineManager {
 
   /// Copies non-comic files to destination.
   Future<void> copyOtherFiles() async {
-    for (final file in cubit.state.progress!.otherFiles) {
+    for (final file in cubit.state.progress.otherFiles) {
       final relativePath = path.relative(
         file.path,
         from: cubit.state.source!.path,

@@ -1,7 +1,6 @@
 import 'dart:isolate';
 import 'dart:ui';
 
-import '../../../../core/util/isolater.dart';
 import '../home_data.dart';
 
 enum WorkerCommand { init, work, stop }

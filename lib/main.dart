@@ -1,5 +1,6 @@
-import 'package:comic_compress/core/state/theme_mode.dart';
-import 'package:comic_compress/feature/home/widget/home_screen.dart';
+import 'core/state/theme_mode.dart';
+import 'feature/home/widget/home_screen.dart';
+
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

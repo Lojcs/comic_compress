@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../feature/home/state/home_cubit.dart';
-import '../../feature/home/state/home_data.dart';
 import '../constants.dart';
 import '../extensions/function_extension.dart';
 import '../state/mubit.dart';

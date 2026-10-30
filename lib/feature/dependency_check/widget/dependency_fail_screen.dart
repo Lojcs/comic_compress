@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../../../core/constants.dart';
 import '../../../core/extensions/context_extension.dart';
-import '../../../core/extensions/function_extension.dart';
 import '../../../core/widget/custom_button.dart';
 import '../../../core/widget/recursive_mubit_widget.dart';
 import '../../info/widget/info_dialog.dart';

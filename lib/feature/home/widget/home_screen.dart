@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:super_drag_and_drop/super_drag_and_drop.dart';
-import 'package:window_manager/window_manager.dart';
 
 import '../../../core/constants.dart';
-import '../../../core/extensions/context_extension.dart';
 import '../../../core/extensions/function_extension.dart';
-import '../../../core/widget/controlled_text_form_field.dart';
-import '../../../core/widget/custom_box.dart';
 import '../../../core/widget/custom_button.dart';
-import '../../../core/widget/custom_slider.dart';
-import '../../../core/widget/custom_switch_tile.dart';
 import '../../../core/widget/file_box.dart';
 import '../../../core/widget/recursive_mubit_widget.dart';
 import '../../info/widget/info_dialog.dart';

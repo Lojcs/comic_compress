@@ -84,7 +84,7 @@ class HomeCubit extends Mubit<HomeData> {
     emit(
       state.copyWith(
         pipelineState: state.pipelineState.copyWith.started(true),
-        progress: state.progress!.copyWith(
+        progress: state.progress.copyWith(
           comicFiles: state.progress.comicFiles
               .map((e) => e.copyWith(stage: .queued, compressionStageRatio: 0))
               .toList(),
@@ -105,19 +105,19 @@ class HomeCubit extends Mubit<HomeData> {
     emit(
       state.copyWith(
         pipelineState: state.pipelineState.copyWith.paused(true),
-        progress: state.progress!.copyWith.pauseTime(DateTime.now()),
+        progress: state.progress.copyWith.pauseTime(DateTime.now()),
       ),
     );
   }
 
   /// Resumes the started compression.
   void resumeCompression() {
-    final pausePeriod = DateTime.now().difference(state.progress!.pauseTime!);
+    final pausePeriod = DateTime.now().difference(state.progress.pauseTime!);
     emit(
       state.copyWith(
         pipelineState: state.pipelineState.copyWith.paused(false),
-        progress: state.progress!.copyWith(
-          startTime: state.progress!.startTime!.add(pausePeriod),
+        progress: state.progress.copyWith(
+          startTime: state.progress.startTime!.add(pausePeriod),
           lastFinishedTime: state.progress.lastFinishedTime!.add(pausePeriod),
         ),
       ),
@@ -131,20 +131,20 @@ class HomeCubit extends Mubit<HomeData> {
     emit(
       state.copyWith(
         pipelineState: PipelineState.blank(),
-        progress: state.progress!.copyWith.pauseTime(DateTime.now()),
+        progress: state.progress.copyWith.pauseTime(DateTime.now()),
       ),
     );
   }
 
   /// Gets the next queued file not yet in progress.
   int? getNextIndex() {
-    if (state.progress!.startedCount == state.progress!.comicFiles.length) {
+    if (state.progress.startedCount == state.progress.comicFiles.length) {
       return null;
     }
-    final index = state.progress!.startedCount;
+    final index = state.progress.startedCount;
     emit(
-      state.copyWith.progress.at(state.progress!.copyWith.inProgressIndecies)([
-        ...state.progress!.inProgressIndecies,
+      state.copyWith.progress.at(state.progress.copyWith.inProgressIndecies)([
+        ...state.progress.inProgressIndecies,
         index,
       ]),
     );
@@ -160,16 +160,16 @@ class HomeCubit extends Mubit<HomeData> {
     if (stage == .compress) {
       emit(
         state.copyWith.progress
-            .at(state.progress!.copyWith.comicFiles)
-            .at(state.progress!.comicFiles.toList().getCopyWith(index))
+            .at(state.progress.copyWith.comicFiles)
+            .at(state.progress.comicFiles.toList().getCopyWith(index))
             .at(
-              state.progress!.comicFiles[index].copyWith.compressionStageRatio,
+              state.progress.comicFiles[index].copyWith.compressionStageRatio,
             )(compressionStageRatio!),
       );
     }
     if (stage == .finished) {
       final filePathNoExt = path.withoutExtension(
-        state.progress!.comicFiles[index].relativePath,
+        state.progress.comicFiles[index].relativePath,
       );
       final finishedFilePath = path.join(
         state.destination.path,
@@ -177,18 +177,18 @@ class HomeCubit extends Mubit<HomeData> {
       );
       final originalFilePath = path.join(
         state.source!.path,
-        state.progress!.comicFiles[index].relativePath,
+        state.progress.comicFiles[index].relativePath,
       );
       await Future.pause(Duration(milliseconds: 500));
       final stat = await File(finishedFilePath).stat();
       final originalStat = await File(originalFilePath).stat();
       emit(
         state.copyWith.progress(
-          state.progress!.copyWith(
-            inProgressIndecies: [...state.progress!.inProgressIndecies]
+          state.progress.copyWith(
+            inProgressIndecies: [...state.progress.inProgressIndecies]
               ..remove(index),
-            finishedCount: state.progress!.finishedCount + 1,
-            finishedSize: state.progress!.finishedSize + stat.size,
+            finishedCount: state.progress.finishedCount + 1,
+            finishedSize: state.progress.finishedSize + stat.size,
             finishedOriginalSize:
                 state.progress.finishedOriginalSize + originalStat.size,
             lastFinishedTime: DateTime.now(),
@@ -198,9 +198,9 @@ class HomeCubit extends Mubit<HomeData> {
     }
     emit(
       state.copyWith.progress
-          .at(state.progress!.copyWith.comicFiles)
-          .at(state.progress!.comicFiles.toList().getCopyWith(index))
-          .at(state.progress!.comicFiles[index].copyWith.stage)(stage),
+          .at(state.progress.copyWith.comicFiles)
+          .at(state.progress.comicFiles.toList().getCopyWith(index))
+          .at(state.progress.comicFiles[index].copyWith.stage)(stage),
     );
   }
 }

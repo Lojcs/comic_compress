@@ -46,8 +46,7 @@ class CompressionPipeline {
     }
   }
 
-  late final relativePath =
-      cubit.state.progress!.comicFiles[index].relativePath;
+  late final relativePath = cubit.state.progress.comicFiles[index].relativePath;
   late final relativePathNoExtension = path.withoutExtension(relativePath);
   late final extension = path.extension(relativePath);
   late final relativePathArchiveExtension =

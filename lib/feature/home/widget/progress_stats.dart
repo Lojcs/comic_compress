@@ -1,12 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/constants.dart';
 import '../../../core/extensions/context_extension.dart';
-import '../../../core/widget/custom_box.dart';
 import '../../../core/widget/recursive_mubit_widget.dart';
 import '../../../core/widget/titled_custom_box.dart';
 import '../state/home_cubit.dart';

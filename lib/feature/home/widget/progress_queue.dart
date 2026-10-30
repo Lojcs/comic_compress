@@ -60,7 +60,7 @@ class _QueueItem extends StatelessWidget {
             width: 275,
             child: BlocSelector<HomeCubit, HomeData, String>(
               selector: (state) =>
-                  state.progress!.comicFiles[index].relativePath,
+                  state.progress.comicFiles[index].relativePath,
               builder: (context, state) =>
                   Text(path.basename(state), style: textTheme.labelSmall),
             ),
@@ -73,7 +73,7 @@ class _QueueItem extends StatelessWidget {
               children: [
                 BlocSelector<HomeCubit, HomeData, double>(
                   selector: (state) =>
-                      state.progress!.comicFiles[index].compressionStageRatio,
+                      state.progress.comicFiles[index].compressionStageRatio,
                   builder: (context, state) => LinearProgressIndicator(
                     minHeight: 28,
                     borderRadius: .circular(8),
@@ -83,7 +83,7 @@ class _QueueItem extends StatelessWidget {
                   ),
                 ),
                 BlocSelector<HomeCubit, HomeData, PipelineStage>(
-                  selector: (state) => state.progress!.comicFiles[index].stage,
+                  selector: (state) => state.progress.comicFiles[index].stage,
                   builder: (context, state) => Text(switch (state) {
                     .queued => "0 / 7 Queued",
                     .copy => "1 / 7 Copying",
