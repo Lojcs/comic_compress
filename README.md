@@ -1,4 +1,4 @@
-# comic_compress
+# Comic Compress
 
 Program for compressing comic files in batch. Supports multi threading, different image formats and archive filtering / normalization.
 
@@ -9,6 +9,8 @@ Comic Compress depends on cjxl (libjxl), cwebp (libwebp) and exiftool. Please ma
 ## Usage
 
 Pick input and output folders, configure the compression settings and start.
+![Comic Compress screenshot](images/comic_compress.png)
+
 
 ## Build
 

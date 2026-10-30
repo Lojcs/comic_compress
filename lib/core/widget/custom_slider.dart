@@ -36,7 +36,7 @@ class IntSlider<C extends Mubit<T>, T> extends SelectingWidget<C, T, int> {
                 value: state.toDouble(),
                 min: min.toDouble(),
                 max: max.toDouble(),
-                divisions: max - min + 1,
+                divisions: max - min,
                 onChanged: (value) => valueChanged(value.toInt()),
               ),
             ),
