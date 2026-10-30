@@ -17,3 +17,5 @@ git clone https://github.com/lojcs/comic_compress.git --recurse-submodules
 .flutter/bin/flutter pub get
 .flutter/bin/flutter build linux
 ```
+## Ai disclosure
+This project was hand-coded except for the github actions workflow.

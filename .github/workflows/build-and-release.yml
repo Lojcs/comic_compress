@@ -1,0 +1,72 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "v*"
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    name: Build Linux release
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            clang cmake ninja-build pkg-config \
+            libgtk-3-dev liblzma-dev libz-dev
+
+      - name: Set up Flutter (submodule)
+        run: |
+          echo "${GITHUB_WORKSPACE}/.flutter/bin" >> "$GITHUB_PATH"
+          .flutter/bin/flutter --version
+
+      - name: Install Dart dependencies
+        run: .flutter/bin/flutter pub get
+
+      - name: Build Linux release
+        run: .flutter/bin/flutter build linux --release
+
+      - name: Prepare release bundle
+        run: |
+          rm -rf dist
+          mkdir -p dist
+          cp -r build/linux/x64/release/bundle dist/comic_compress
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: comic_compress-linux
+          path: dist/comic_compress
+          if-no-files-found: error
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: build-linux
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download release artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: comic_compress-linux
+          path: comic_compress
+
+      - name: Compress release bundle
+        run: tar -czf comic_compress_linux.tar.gz -c comic_compress
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: comic_compress_linux.tar.gz
+          generate_release_notes: true
+          draft: true
