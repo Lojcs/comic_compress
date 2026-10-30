@@ -11,7 +11,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   Future.microtask(() async {
-    await windowManager.setSize(HomeScreen.size(ImageSettings.blank(), false));
+    await windowManager.setSize(
+      HomeScreen.size(ImageSettings.blank(), .initial),
+    );
     await windowManager.setMinimumSize(HomeScreen.minSize);
     // await windowManager.setMaximumSize(HomeScreen.maxSize);
   });

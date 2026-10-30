@@ -50,14 +50,10 @@ class CompressionPipeline {
       cubit.state.progress!.comicFiles[index].relativePath;
   late final relativePathNoExtension = path.withoutExtension(relativePath);
   late final extension = path.extension(relativePath);
-  late final relativePathArchiveExtension = path.setExtension(
-    relativePathNoExtension,
-    extension == ".cbr" ? ".rar" : ".zip",
-  );
-  late final relativePathCbz = path.setExtension(
-    relativePathNoExtension,
-    ".cbz",
-  );
+  late final relativePathArchiveExtension =
+      relativePathNoExtension + (extension == ".cbr" ? ".rar" : ".zip");
+  // Don't use path.setExtension!!
+  late final relativePathCbz = "$relativePathNoExtension.cbz";
 
   late final sourcePath = path.join(cubit.state.source!.path, relativePath);
   late final copyPath = path.join(tempDir.path, relativePathArchiveExtension);
@@ -140,7 +136,6 @@ class CompressionPipeline {
       filePath: filePath,
       settings: cubit.state.imageSettings,
     ));
-    // await _compress((filePath: filePath, settings: cubit.state.imageSettings));
     compressedImageCount++;
     await cubit.changeStage(
       index,
@@ -222,10 +217,8 @@ class CompressionPipeline {
       if (args.normalizeFlatten && !fileUntouched) {
         newPath = path.join(
           args.path,
-          path.setExtension(
-            idx.toString().padLeft(fileCountDigits),
-            path.extension(relativePath),
-          ),
+          idx.toString().padLeft(fileCountDigits) +
+              path.extension(relativePath),
         );
       } else {
         newPath = path.join(args.path, path.basename(relativePath));
@@ -260,6 +253,7 @@ class CompressionPipeline {
   ) async {
     final extensionlessPath = path.withoutExtension(args.filePath);
     final ProcessResult result;
+    await _fix(args.filePath);
     switch (args.settings.codec) {
       case .jxl:
         final settings = args.settings as JxlImageSettings;
@@ -267,14 +261,9 @@ class CompressionPipeline {
         final losslessJpeg =
             settings.distance == 0 &&
             (extension == "jpeg" || extension == "jpg");
-        final intermediaryPath = path.setExtension(
-          extensionlessPath,
-          ".jxl.tmp",
-        );
-        final destinationPath = path.setExtension(extensionlessPath, ".jxl");
+        final intermediaryPath = "$extensionlessPath.jxl.tmp";
+        final destinationPath = "$extensionlessPath.jxl";
         result = await Processr.run("cjxl", [
-          "-e",
-          "${settings.effort}",
           "-d",
           "${settings.distance}",
           "-e",
@@ -293,7 +282,8 @@ class CompressionPipeline {
         }
       case .webp:
         final settings = args.settings as WebpImageSettings;
-        final destinationPath = path.setExtension(extensionlessPath, ".webp");
+        final intermediaryPath = "$extensionlessPath.webp.tmp";
+        final destinationPath = "$extensionlessPath.webp";
         result = await Processr.run("cwebp", [
           "-preset",
           settings.preset.name,
@@ -303,16 +293,17 @@ class CompressionPipeline {
           "${settings.effort}",
           args.filePath,
           "-o",
-          destinationPath,
+          intermediaryPath,
         ]);
         await File(args.filePath).delete();
-        final extensionlessFile = File(extensionlessPath);
-        if (await extensionlessFile.exists()) {
-          await extensionlessFile.rename(destinationPath);
+        final intermediaryFile = File(intermediaryPath);
+        if (await intermediaryFile.exists()) {
+          await intermediaryFile.rename(destinationPath);
         }
       case .webpLossless:
         final settings = args.settings as WebpLosslessImageSettings;
-        final destinationPath = path.setExtension(extensionlessPath, ".webp");
+        final intermediaryPath = "$extensionlessPath.webp.tmp";
+        final destinationPath = "$extensionlessPath.webp";
         result = await Processr.run("cwebp", [
           "-preset",
           settings.preset.name,
@@ -321,28 +312,35 @@ class CompressionPipeline {
           "${settings.effort}",
           args.filePath,
           "-o",
-          destinationPath,
+          intermediaryPath,
         ]);
         await File(args.filePath).delete();
-        final extensionlessFile = File(extensionlessPath);
-        if (await extensionlessFile.exists()) {
-          await extensionlessFile.rename(destinationPath);
+        final intermediaryFile = File(intermediaryPath);
+        if (await intermediaryFile.exists()) {
+          await intermediaryFile.rename(destinationPath);
         }
-      case .cjpeg:
-        final settings = args.settings.codec as CJpegImageSettings;
-        final destinationPath = path.setExtension(extensionlessPath, ".jpg");
-        result = await Processr.run("cjxl", [
-          "-quality",
-          "${settings.quality}",
-          args.filePath,
-          "-outfile",
-          destinationPath,
-        ]);
-        await File(args.filePath).delete();
-        final extensionlessFile = File(extensionlessPath);
-        if (await extensionlessFile.exists()) {
-          await extensionlessFile.rename(destinationPath);
-        }
+    }
+  }
+
+  /// Fixes malformed metadata.
+  static Future<void> _fix(String filePath) async {
+    final extension = path.extension(filePath).toLowerCase();
+    if (extension == ".jpg" || extension == ".jpeg") {
+      final extensionlessPath = path.withoutExtension(filePath);
+      final intermediaryPath = "$extensionlessPath.jpg.tmp";
+      final result = await Processr.run("exiftool", [
+        "-all=",
+        "-tagsfromfile",
+        "@",
+        "-icc_profile",
+        "-exif:orientation",
+        filePath,
+        "-o",
+        intermediaryPath,
+      ]);
+      await File(filePath).delete();
+      final intermediaryFile = File(intermediaryPath);
+      await intermediaryFile.rename(filePath);
     }
   }
 

@@ -58,10 +58,6 @@ class ImageSettingsBox
                             style: textTheme.bodyMedium,
                           ),
                         ),
-                        DropdownMenuItem(
-                          value: .cjpeg,
-                          child: Text("Jpeg", style: textTheme.bodyMedium),
-                        ),
                       ],
                       onChanged: (value) =>
                           context.read<HomeCubit>().setCodec(value!),
@@ -75,7 +71,6 @@ class ImageSettingsBox
                 .webpLossless => _WebpLosslessImageSettingsBody(
                   valueChanged: valueChanged,
                 ),
-                .cjpeg => _CJpegImageSettingsBody(valueChanged: valueChanged),
               },
             ],
           ),
@@ -248,36 +243,6 @@ class _WebpLosslessImageSettingsBody
           selector: (state) => selector(state).effort,
           valueChanged: (value) =>
               valueChanged(val(context).copyWith.effort(value)),
-        ),
-      ],
-    );
-  }
-}
-
-class _CJpegImageSettingsBody
-    extends SelectingWidget<HomeCubit, HomeData, CJpegImageSettings> {
-  static CJpegImageSettings _selector(HomeData state) =>
-      switch (state.imageSettings) {
-        CJpegImageSettings settings => settings,
-        _ => CJpegImageSettings.blank(),
-      };
-  const new({super.key, required super.valueChanged})
-    : super(selector: _selector);
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = context.textTheme;
-    return Column(
-      crossAxisAlignment: .start,
-      spacing: 8,
-      children: [
-        IntSlider<HomeCubit, HomeData>(
-          title: "Quality",
-          min: 0,
-          max: 100,
-          selector: (state) => selector(state).quality,
-          valueChanged: (value) =>
-              valueChanged(val(context).copyWith.quality(value)),
         ),
       ],
     );

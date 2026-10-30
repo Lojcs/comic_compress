@@ -393,57 +393,6 @@ extension $WebpLosslessImageSettingsCopyWith on WebpLosslessImageSettings {
       _$WebpLosslessImageSettingsCWProxyImpl(this);
 }
 
-abstract class _$CJpegImageSettingsCWProxy {
-  CJpegImageSettings quality(int quality);
-
-  /// Creates a new instance with the provided field values.
-  /// Omitted fields keep their values; explicit `null` clears nullable fields.
-  /// The public API rejects `null` for non-nullable fields. To update a single field use `CJpegImageSettings(...).copyWith.fieldName(value)`.
-  ///
-  /// Example:
-  /// ```dart
-  /// CJpegImageSettings(...).copyWith(id: 12, name: "My name")
-  /// ```
-  CJpegImageSettings call({int quality});
-}
-
-/// Callable proxy for `copyWith` functionality.
-/// Use as `instanceOfCJpegImageSettings.copyWith(...)` or call `instanceOfCJpegImageSettings.copyWith.fieldName(value)` for a single field.
-class _$CJpegImageSettingsCWProxyImpl implements _$CJpegImageSettingsCWProxy {
-  const _$CJpegImageSettingsCWProxyImpl(this._value);
-
-  final CJpegImageSettings _value;
-
-  @override
-  CJpegImageSettings quality(int quality) => call(quality: quality);
-
-  /// Creates a new instance with the provided field values.
-  /// Omitted fields keep their values; explicit `null` clears nullable fields.
-  /// The public API rejects `null` for non-nullable fields. To update a single field use `CJpegImageSettings(...).copyWith.fieldName(value)`.
-  ///
-  /// Example:
-  /// ```dart
-  /// CJpegImageSettings(...).copyWith(id: 12, name: "My name")
-  /// ```
-  @override
-  CJpegImageSettings call({Object? quality = const $CopyWithPlaceholder()}) {
-    return CJpegImageSettings(
-      quality: quality == const $CopyWithPlaceholder() || quality == null
-          ? _value.quality
-          // ignore: cast_nullable_to_non_nullable
-          : quality as int,
-    );
-  }
-}
-
-extension $CJpegImageSettingsCopyWith on CJpegImageSettings {
-  /// Returns a callable class used to build a new instance with modified fields.
-  /// Example: `instanceOfCJpegImageSettings.copyWith(...)` or `instanceOfCJpegImageSettings.copyWith.fieldName(...)`.
-  // ignore: library_private_types_in_public_api
-  _$CJpegImageSettingsCWProxy get copyWith =>
-      _$CJpegImageSettingsCWProxyImpl(this);
-}
-
 abstract class _$MiscSettingsCWProxy {
   MiscSettings filterSettings(FilterSettings filterSettings);
 
@@ -643,6 +592,8 @@ abstract class _$ProgressCWProxy {
 
   Progress pauseTime(DateTime? pauseTime);
 
+  Progress lastFinishedTime(DateTime? lastFinishedTime);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `Progress(...).copyWith.fieldName(value)`.
@@ -662,6 +613,7 @@ abstract class _$ProgressCWProxy {
     int finishedOriginalSize,
     DateTime? startTime,
     DateTime? pauseTime,
+    DateTime? lastFinishedTime,
   });
 }
 
@@ -708,6 +660,10 @@ class _$ProgressCWProxyImpl implements _$ProgressCWProxy {
   @override
   Progress pauseTime(DateTime? pauseTime) => call(pauseTime: pauseTime);
 
+  @override
+  Progress lastFinishedTime(DateTime? lastFinishedTime) =>
+      call(lastFinishedTime: lastFinishedTime);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `Progress(...).copyWith.fieldName(value)`.
@@ -728,6 +684,7 @@ class _$ProgressCWProxyImpl implements _$ProgressCWProxy {
     Object? finishedOriginalSize = const $CopyWithPlaceholder(),
     Object? startTime = const $CopyWithPlaceholder(),
     Object? pauseTime = const $CopyWithPlaceholder(),
+    Object? lastFinishedTime = const $CopyWithPlaceholder(),
   }) {
     return Progress(
       comicFiles:
@@ -782,6 +739,10 @@ class _$ProgressCWProxyImpl implements _$ProgressCWProxy {
           ? _value.pauseTime
           // ignore: cast_nullable_to_non_nullable
           : pauseTime as DateTime?,
+      lastFinishedTime: lastFinishedTime == const $CopyWithPlaceholder()
+          ? _value.lastFinishedTime
+          // ignore: cast_nullable_to_non_nullable
+          : lastFinishedTime as DateTime?,
     );
   }
 }

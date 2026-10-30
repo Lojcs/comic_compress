@@ -21,153 +21,186 @@ class ProgressStats extends SelectingWidget<HomeCubit, HomeData, Progress?> {
   @override
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
-    return BlocSelector<HomeCubit, HomeData, bool>(
-      selector: (state) => selector(state)!.comicFiles.isEmpty,
-      builder: (context, state) => TitledCustomBox(
-        title: "Stats",
-        closedReason: "No files selected.",
-        open: !state,
-        child: Table(
-          columnWidths: {
-            0: MaxColumnWidth(FlexColumnWidth(), FixedColumnWidth(120)),
-          },
-          children: [
-            TableRow(
-              children: [
-                Text("Non-comic files:", style: textTheme.labelLarge),
-                Center(
-                  child: BlocSelector<HomeCubit, HomeData, int>(
-                    selector: (state) => selector(state)!.otherFiles.length,
-                    builder: (context, state) => Text("$state files"),
-                  ),
-                ),
-                Align(
-                  alignment: .centerRight,
-                  child: BlocSelector<HomeCubit, HomeData, int>(
-                    selector: (state) => selector(state)!.otherFilesSize,
-                    builder: (context, state) => Text(_sizeToString(state)),
-                  ),
-                ),
-              ],
+    final colorScheme = context.colorScheme;
+    return Stack(
+      alignment: .topCenter,
+      children: [
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: .circular(8),
+              color: colorScheme.surfaceContainer,
             ),
-            TableRow(
-              children: [
-                Text("Scanned:", style: textTheme.labelLarge),
-                Center(
-                  child: BlocSelector<HomeCubit, HomeData, int>(
-                    selector: (state) => selector(state)!.comicFiles.length,
-                    builder: (context, state) => Text("$state files"),
-                  ),
-                ),
-                Align(
-                  alignment: .centerRight,
-                  child: BlocSelector<HomeCubit, HomeData, int>(
-                    selector: (state) => selector(state)!.comicFilesSize,
-                    builder: (context, state) => Text(_sizeToString(state)),
-                  ),
-                ),
-              ],
-            ),
-            TableRow(
-              children: [
-                Text("Not Started:", style: textTheme.labelLarge),
-                Center(
-                  child: BlocSelector<HomeCubit, HomeData, int>(
-                    selector: (state) => selector(state)!.notStartedCount,
-                    builder: (context, state) => Text("$state files"),
-                  ),
-                ),
-                Center(),
-              ],
-            ),
-            TableRow(
-              children: [
-                Text("In Progress:", style: textTheme.labelLarge),
-                Center(
-                  child: BlocSelector<HomeCubit, HomeData, int>(
-                    selector: (state) =>
-                        selector(state)!.inProgressIndecies.length,
-                    builder: (context, state) => Text("$state files"),
-                  ),
-                ),
-                Center(),
-              ],
-            ),
-            TableRow(
-              children: [
-                Text("Done:", style: textTheme.labelLarge),
-                Center(
-                  child: BlocSelector<HomeCubit, HomeData, int>(
-                    selector: (state) => selector(state)!.finishedCount,
-                    builder: (context, state) => Text("$state files"),
-                  ),
-                ),
-                Align(
-                  alignment: .centerRight,
-                  child: BlocSelector<HomeCubit, HomeData, (int, int)>(
-                    selector: (state) => (
-                      selector(state)!.finishedOriginalSize,
-                      selector(state)!.finishedSize,
-                    ),
-                    builder: (context, state) => Text(
-                      "${_sizeToString(state.$1)} -> ${_sizeToString(state.$2)}",
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            TableRow(
-              children: [
-                Text("Speed:", style: textTheme.labelLarge),
-                Center(
-                  child: BlocSelector<HomeCubit, HomeData, double?>(
-                    selector: (state) => selector(state)!.filesPerSecond,
-                    builder: (context, state) =>
-                        state == null || state.isNaN || state.isInfinite
-                        ? Text("...")
-                        : Text("${state.toStringAsFixed(2)} files/s"),
-                  ),
-                ),
-                Align(
-                  alignment: .centerRight,
-                  child: BlocSelector<HomeCubit, HomeData, double?>(
-                    selector: (state) =>
-                        selector(state)!.originalBytesPerSecond,
-                    builder: (context, state) =>
-                        state == null || state.isNaN || state.isInfinite
-                        ? Text("...")
-                        : Text("${_sizeToString(state)}/s"),
-                  ),
-                ),
-              ],
-            ),
-            TableRow(
-              children: [
-                Text("Remaining Time:", style: textTheme.labelLarge),
-                Center(
-                  child: BlocSelector<HomeCubit, HomeData, double?>(
-                    selector: (state) => selector(state)!.remainingSecondsFiles,
-                    builder: (context, state) =>
-                        state == null || state.isNaN || state.isInfinite
-                        ? Text("...")
-                        : Text(_secondsToString(state.toInt())),
-                  ),
-                ),
-                Align(
-                  alignment: .centerRight,
-                  child: BlocSelector<HomeCubit, HomeData, double?>(
-                    selector: (state) => selector(state)!.remainingSecondsBytes,
-                    builder: (context, state) =>
-                        state == null || state.isNaN || state.isInfinite
-                        ? Text("...")
-                        : Text(_secondsToString(state.toInt())),
-                  ),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
-      ),
+        Positioned.fill(
+          child: BlocSelector<HomeCubit, HomeData, bool>(
+            selector: (state) => state.pipelineState.started,
+            builder: (context, state) => state
+                ? LinearProgressIndicator(
+                    borderRadius: .circular(8),
+                    backgroundColor: colorScheme.surfaceContainer,
+                    color: Color.lerp(
+                      colorScheme.surfaceContainer,
+                      colorScheme.secondaryContainer,
+                      0.1,
+                    ),
+                  )
+                : Center(),
+          ),
+        ),
+        BlocSelector<HomeCubit, HomeData, bool>(
+          selector: (state) => selector(state)!.comicFiles.isEmpty,
+          builder: (context, state) => TitledCustomBox(
+            title: "Stats",
+            closedReason: "No files selected.",
+            open: !state,
+            transparent: true,
+            child: Table(
+              columnWidths: {
+                0: MaxColumnWidth(FlexColumnWidth(), FixedColumnWidth(120)),
+              },
+              children: [
+                TableRow(
+                  children: [
+                    Text("Non-comic files:", style: textTheme.labelLarge),
+                    Center(
+                      child: BlocSelector<HomeCubit, HomeData, int>(
+                        selector: (state) => selector(state)!.otherFiles.length,
+                        builder: (context, state) => Text("$state files"),
+                      ),
+                    ),
+                    Align(
+                      alignment: .centerRight,
+                      child: BlocSelector<HomeCubit, HomeData, int>(
+                        selector: (state) => selector(state)!.otherFilesSize,
+                        builder: (context, state) => Text(_sizeToString(state)),
+                      ),
+                    ),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    Text("Scanned:", style: textTheme.labelLarge),
+                    Center(
+                      child: BlocSelector<HomeCubit, HomeData, int>(
+                        selector: (state) => selector(state)!.comicFiles.length,
+                        builder: (context, state) => Text("$state files"),
+                      ),
+                    ),
+                    Align(
+                      alignment: .centerRight,
+                      child: BlocSelector<HomeCubit, HomeData, int>(
+                        selector: (state) => selector(state)!.comicFilesSize,
+                        builder: (context, state) => Text(_sizeToString(state)),
+                      ),
+                    ),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    Text("Not Started:", style: textTheme.labelLarge),
+                    Center(
+                      child: BlocSelector<HomeCubit, HomeData, int>(
+                        selector: (state) => selector(state)!.notStartedCount,
+                        builder: (context, state) => Text("$state files"),
+                      ),
+                    ),
+                    Center(),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    Text("In Progress:", style: textTheme.labelLarge),
+                    Center(
+                      child: BlocSelector<HomeCubit, HomeData, int>(
+                        selector: (state) =>
+                            selector(state)!.inProgressIndecies.length,
+                        builder: (context, state) => Text("$state files"),
+                      ),
+                    ),
+                    Center(),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    Text("Done:", style: textTheme.labelLarge),
+                    Center(
+                      child: BlocSelector<HomeCubit, HomeData, int>(
+                        selector: (state) => selector(state)!.finishedCount,
+                        builder: (context, state) => Text("$state files"),
+                      ),
+                    ),
+                    Align(
+                      alignment: .centerRight,
+                      child: BlocSelector<HomeCubit, HomeData, (int, int)>(
+                        selector: (state) => (
+                          selector(state)!.finishedOriginalSize,
+                          selector(state)!.finishedSize,
+                        ),
+                        builder: (context, state) => Text(
+                          "${_sizeToString(state.$1)} -> ${_sizeToString(state.$2)}",
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    Text("Speed:", style: textTheme.labelLarge),
+                    Center(
+                      child: BlocSelector<HomeCubit, HomeData, double?>(
+                        selector: (state) => selector(state)!.filesPerSecond,
+                        builder: (context, state) =>
+                            state == null || state.isNaN || state.isInfinite
+                            ? Text("...")
+                            : Text("${state.toStringAsFixed(2)} files/s"),
+                      ),
+                    ),
+                    Align(
+                      alignment: .centerRight,
+                      child: BlocSelector<HomeCubit, HomeData, double?>(
+                        selector: (state) =>
+                            selector(state)!.originalBytesPerSecond,
+                        builder: (context, state) =>
+                            state == null || state.isNaN || state.isInfinite
+                            ? Text("...")
+                            : Text("${_sizeToString(state)}/s"),
+                      ),
+                    ),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    Text("Remaining Time:", style: textTheme.labelLarge),
+                    Center(
+                      child: BlocSelector<HomeCubit, HomeData, double?>(
+                        selector: (state) =>
+                            selector(state)!.remainingSecondsFiles,
+                        builder: (context, state) =>
+                            state == null || state.isNaN || state.isInfinite
+                            ? Text("...")
+                            : Text(_secondsToString(state.toInt())),
+                      ),
+                    ),
+                    Align(
+                      alignment: .centerRight,
+                      child: BlocSelector<HomeCubit, HomeData, double?>(
+                        selector: (state) =>
+                            selector(state)!.remainingSecondsBytes,
+                        builder: (context, state) =>
+                            state == null || state.isNaN || state.isInfinite
+                            ? Text("...")
+                            : Text(_secondsToString(state.toInt())),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

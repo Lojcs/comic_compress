@@ -4,7 +4,7 @@ import 'package:window_manager/window_manager.dart';
 import '../constants.dart';
 import '../extensions/context_extension.dart';
 
-enum CustomBoxType { normal, accent, selected }
+enum CustomBoxType { normal, accent, selected, transparent }
 
 class CustomBox extends StatelessWidget {
   final Widget child;
@@ -24,7 +24,7 @@ class CustomBox extends StatelessWidget {
       behavior: .opaque,
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
+        curve: Curves.easeOut,
         constraints: BoxConstraints(maxWidth: customBoxWidth),
         padding: .symmetric(
           horizontal: dense ? 6 : 16,
@@ -35,12 +35,14 @@ class CustomBox extends StatelessWidget {
             .normal => colorScheme.surfaceContainer,
             .accent => colorScheme.surface,
             .selected => colorScheme.secondaryContainer,
+            .transparent => Colors.transparent,
           },
           border: .all(
             color: switch (type) {
               .normal => colorScheme.surfaceContainer,
               .accent => colorScheme.surface,
               .selected => colorScheme.primary,
+              .transparent => Colors.transparent,
             },
           ),
           borderRadius: .circular(8),

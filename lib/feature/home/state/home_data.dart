@@ -78,7 +78,7 @@ class PipelineState with Equatable {
   List<Object?> get props => [started, paused, windDown];
 }
 
-enum ImageCodec { jxl, webp, webpLossless, cjpeg }
+enum ImageCodec { jxl, webp, webpLossless }
 
 /// Settings to use for image compression.
 sealed class ImageSettings with Equatable {
@@ -93,7 +93,6 @@ sealed class ImageSettings with Equatable {
     .jxl => JxlImageSettings.blank(),
     .webp => WebpImageSettings.blank(),
     .webpLossless => WebpLosslessImageSettings.blank(),
-    .cjpeg => CJpegImageSettings.blank(),
   };
   @override
   List<Object?> get props => [codec];
@@ -176,22 +175,6 @@ final class WebpLosslessImageSettings extends ImageSettings {
 
   @override
   List<Object?> get props => [...super.props, preset, effort];
-}
-
-/// Jpeg specific image settings.
-@CopyWith()
-final class CJpegImageSettings extends ImageSettings {
-  @override
-  int get settingCount => 2;
-
-  /// Quality of image. 0-100.
-  final int quality;
-
-  const new({required this.quality}) : super(codec: .cjpeg);
-  const new blank() : quality = 75, super(codec: .cjpeg);
-
-  @override
-  List<Object?> get props => [...super.props, quality];
 }
 
 /// Misc settings to use during compression.
@@ -292,6 +275,9 @@ class Progress with Equatable {
 
   /// Time when the compression was paused.
   final DateTime? pauseTime;
+
+  /// Time the last file was finished.
+  final DateTime? lastFinishedTime;
   const new({
     required this.comicFiles,
     required this.otherFiles,
@@ -303,6 +289,7 @@ class Progress with Equatable {
     required this.finishedOriginalSize,
     required this.startTime,
     required this.pauseTime,
+    required this.lastFinishedTime,
   });
   new blank({
     required Directory source,
@@ -318,7 +305,8 @@ class Progress with Equatable {
        finishedSize = 0,
        finishedOriginalSize = 0,
        startTime = null,
-       pauseTime = null;
+       pauseTime = null,
+       lastFinishedTime = null;
   const new initial()
     : comicFiles = const [],
       otherFiles = const [],
@@ -329,12 +317,13 @@ class Progress with Equatable {
       finishedSize = 0,
       finishedOriginalSize = 0,
       startTime = null,
-      pauseTime = null;
+      pauseTime = null,
+      lastFinishedTime = null;
 
   int get startedCount => inProgressIndecies.length + finishedCount;
   int get notStartedCount => comicFiles.length - startedCount;
   Duration? get ongoingTime =>
-      startTime == null ? null : DateTime.now().difference(startTime!);
+      startTime == null ? null : lastFinishedTime!.difference(startTime!);
   double? get filesPerSecond =>
       ongoingTime == null ? null : finishedCount / ongoingTime!.inSeconds;
   double? get bytesPerSecond =>
@@ -344,10 +333,12 @@ class Progress with Equatable {
       : finishedOriginalSize / ongoingTime!.inSeconds;
   double? get remainingSecondsFiles => filesPerSecond == null
       ? null
-      : (comicFiles.length - finishedCount) / filesPerSecond!;
+      : ((comicFiles.length - finishedCount) / filesPerSecond!) -
+            DateTime.now().difference(lastFinishedTime!).inSeconds;
   double? get remainingSecondsBytes => bytesPerSecond == null
       ? null
-      : (comicFilesSize - finishedOriginalSize) / originalBytesPerSecond!;
+      : ((comicFilesSize - finishedOriginalSize) / originalBytesPerSecond!) -
+            DateTime.now().difference(lastFinishedTime!).inSeconds;
 
   @override
   List<Object?> get props => [

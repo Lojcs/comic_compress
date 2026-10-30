@@ -21,17 +21,21 @@ import 'misc_settings_box.dart';
 import 'progress_stats.dart';
 import 'progress_queue.dart';
 
+enum HomeScreenState { initial, folderOpen, running }
+
 class HomeScreen extends ProvidingWidget<HomeCubit, HomeData> {
   static const double minWidth = 516;
   static const double maxWidth = 1032;
   static const double minHeight = 640;
   static const double folderHeight = 148;
   static const double runningHeight = 160;
-  static Size size(ImageSettings settings, bool folderOpen) => Size(
+  static Size size(ImageSettings settings, HomeScreenState state) => Size(
     minWidth,
     minHeight +
-        settings.settingCount * tileHeightWithPadding +
-        (folderOpen ? folderHeight : 0),
+        (state == .running
+            ? 96
+            : settings.settingCount * tileHeightWithPadding) +
+        (state != .initial ? folderHeight : 0),
   );
   static const maxSize = Size(maxWidth, 10000);
   static const minSize = Size(516, 500);
@@ -88,18 +92,28 @@ class HomeScreen extends ProvidingWidget<HomeCubit, HomeData> {
                           constraints: BoxConstraints(
                             maxWidth: customBoxWidth - 72,
                           ),
-                          child: FileBox<HomeCubit, HomeData>(
-                            selector: (state) => state.source,
-                            valueChanged: cubit.setSource,
-                            title: "Source Folder",
+                          child: BlocSelector<HomeCubit, HomeData, bool>(
+                            selector: (state) => state.pipelineState.started,
+                            builder: (context, state) =>
+                                FileBox<HomeCubit, HomeData>(
+                                  selector: (state) => state.source,
+                                  valueChanged: cubit.setSource,
+                                  title: "Source Folder",
+                                  enabled: !state,
+                                ),
                           ),
                         ),
-                        FileBox<HomeCubit, HomeData>(
-                          selector: (state) => state.destination,
-                          valueChanged: cubit.mutate
-                              .by((a) => a.copyWith.destination)
-                              .at((s) => s!),
-                          title: "Destination Folder",
+                        BlocSelector<HomeCubit, HomeData, bool>(
+                          selector: (state) => state.pipelineState.started,
+                          builder: (context, state) =>
+                              FileBox<HomeCubit, HomeData>(
+                                selector: (state) => state.destination,
+                                valueChanged: cubit.mutate
+                                    .by((a) => a.copyWith.destination)
+                                    .at((s) => s!),
+                                title: "Destination Folder",
+                                enabled: !state,
+                              ),
                         ),
                         ImageSettingsBox(
                           valueChanged: cubit.mutate.by(

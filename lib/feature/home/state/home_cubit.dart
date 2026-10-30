@@ -31,7 +31,7 @@ class HomeCubit extends Mubit<HomeData> {
   Future<void> setCodec(ImageCodec codec) async {
     final settings = ImageSettings.codec(codec);
     await windowManager.setSize(
-      HomeScreen.size(settings, state.source != null),
+      HomeScreen.size(settings, state.source != null ? .folderOpen : .initial),
     );
     emit(state.copyWith(imageSettings: settings));
   }
@@ -59,7 +59,9 @@ class HomeCubit extends Mubit<HomeData> {
       );
       final comicFilesSize = comicFileSizes.fold(0, (a, b) => a + b);
       final otherFilesSize = otherFileSizes.fold(0, (a, b) => a + b);
-      await windowManager.setSize(HomeScreen.size(state.imageSettings, true));
+      await windowManager.setSize(
+        HomeScreen.size(state.imageSettings, .folderOpen),
+      );
       emit(
         state.copyWith(
           source: source,
@@ -76,17 +78,22 @@ class HomeCubit extends Mubit<HomeData> {
   }
 
   /// Starts the compression.
-  void startCompression() {
+  void startCompression() async {
     _manager.start();
+    windowManager.setSize(HomeScreen.size(state.imageSettings, .running));
     emit(
       state.copyWith(
         pipelineState: state.pipelineState.copyWith.started(true),
         progress: state.progress!.copyWith(
+          comicFiles: state.progress.comicFiles
+              .map((e) => e.copyWith(stage: .queued, compressionStageRatio: 0))
+              .toList(),
           inProgressIndecies: [],
           finishedCount: 0,
           finishedOriginalSize: 0,
           finishedSize: 0,
           startTime: DateTime.now(),
+          lastFinishedTime: DateTime.now(),
           pauseTime: null,
         ),
       ),
@@ -109,8 +116,9 @@ class HomeCubit extends Mubit<HomeData> {
     emit(
       state.copyWith(
         pipelineState: state.pipelineState.copyWith.paused(false),
-        progress: state.progress!.copyWith.startTime(
-          state.progress!.startTime!.add(pausePeriod),
+        progress: state.progress!.copyWith(
+          startTime: state.progress!.startTime!.add(pausePeriod),
+          lastFinishedTime: state.progress.lastFinishedTime!.add(pausePeriod),
         ),
       ),
     );
@@ -118,6 +126,7 @@ class HomeCubit extends Mubit<HomeData> {
 
   /// Stops the compression.
   void stopCompression() {
+    windowManager.setSize(HomeScreen.size(state.imageSettings, .folderOpen));
     _manager.stop();
     emit(
       state.copyWith(
@@ -182,6 +191,7 @@ class HomeCubit extends Mubit<HomeData> {
             finishedSize: state.progress!.finishedSize + stat.size,
             finishedOriginalSize:
                 state.progress.finishedOriginalSize + originalStat.size,
+            lastFinishedTime: DateTime.now(),
           ),
         ),
       );

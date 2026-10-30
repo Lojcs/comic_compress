@@ -8,6 +8,7 @@ class TitledCustomBox extends StatelessWidget {
   final String closedReason;
   final bool open;
   final Widget child;
+  final bool transparent;
 
   const new({
     super.key,
@@ -15,6 +16,7 @@ class TitledCustomBox extends StatelessWidget {
     required this.closedReason,
     required this.open,
     required this.child,
+    this.transparent = false,
   });
 
   @override
@@ -22,6 +24,7 @@ class TitledCustomBox extends StatelessWidget {
     final textTheme = context.textTheme;
     return CustomBox(
       dense: false,
+      type: transparent ? .transparent : .normal,
       child: open
           ? Column(
               crossAxisAlignment: .start,

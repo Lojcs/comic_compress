@@ -15,11 +15,13 @@ import 'recursive_mubit_widget.dart';
 class FileBox<C extends Mubit<T>, T> extends SelectingWidget<C, T, Directory?> {
   final String title;
   final bool large;
+  final bool enabled;
   const new({
     super.key,
     required super.selector,
     required super.valueChanged,
     required this.title,
+    this.enabled = true,
     this.large = false,
   });
 
@@ -36,9 +38,12 @@ class FileBox<C extends Mubit<T>, T> extends SelectingWidget<C, T, Directory?> {
         child: DropRegion(
           hitTestBehavior: .opaque,
           formats: [Formats.fileUri],
-          onDropEnter: (_) => setState(() => hovering = true),
-          onDropLeave: (_) => setState(() => hovering = false),
+          onDropEnter: !enabled ? null : (_) => setState(() => hovering = true),
+          onDropLeave: !enabled
+              ? null
+              : (_) => setState(() => hovering = false),
           onDropOver: (event) async {
+            if (!enabled) return .none;
             setState(() => hovering = true);
             if (event.session.allowedOperations.contains(DropOperation.link)) {
               return .link;
@@ -55,6 +60,7 @@ class FileBox<C extends Mubit<T>, T> extends SelectingWidget<C, T, Directory?> {
             }
           },
           onPerformDrop: (event) async {
+            if (!enabled) return;
             final item = event.session.items.first;
             item.dataReader!.getValue(Formats.fileUri, (uri) {
               if (uri == null) return;
@@ -93,6 +99,7 @@ class FileBox<C extends Mubit<T>, T> extends SelectingWidget<C, T, Directory?> {
                           title: title,
                           onFile: onFile,
                           state: state,
+                          enabled: enabled,
                         ),
                       ),
                     ],
@@ -111,11 +118,13 @@ class _DirectoryPickInstructions extends StatelessWidget {
   final String title;
   final Directory? state;
   final void Function(Uri uri) onFile;
+  final bool enabled;
   const new({
     super.key,
     required this.title,
     required this.state,
     required this.onFile,
+    required this.enabled,
   });
 
   @override
@@ -129,6 +138,7 @@ class _DirectoryPickInstructions extends StatelessWidget {
           padding: .symmetric(horizontal: 4),
           child: CustomButton(
             text: "pick folder",
+            enabled: enabled,
             onTap: () async {
               final path = await FilePicker.getDirectoryPath(
                 dialogTitle: "Pick $title",
