@@ -18,6 +18,9 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Fetch Flutter submodule tags
+        run: git -C .flutter fetch --tags --force origin
+
       - name: Install Linux build dependencies
         run: |
           sudo apt-get update
