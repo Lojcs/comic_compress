@@ -14,12 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
-
-      - name: Fetch Flutter submodule tags
-        run: git -C .flutter fetch --tags --force origin
+          fetch-tags: true
 
       - name: Install Linux build dependencies
         run: |
